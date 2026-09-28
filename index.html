@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -727,11 +727,65 @@ details.cf-det summary{cursor:pointer;color:var(--ac);font-weight:500;padding:4p
 #cf-dlg .cf-scrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
 #cf-dlg form{position:relative;width:100%;max-width:360px;background:var(--carta);border-radius:var(--r-g);padding:18px;
   display:flex;flex-direction:column;gap:12px;box-shadow:var(--s-3)}
-/* no celular o botão "…" fica à esquerda: o menu abre pra direita e rola se não couber */
-@media (max-width:760px){
-  .menu{right:auto;left:0;max-width:calc(100vw - 32px);max-height:calc(100vh - 170px);overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .tema-chip{white-space:normal;max-width:100%}   /* nome de tema comprido empurrava a tela pro lado */
-}
+/* ═════ CELULAR (≤760px): o painel foi desenhado pro Mac — aqui ele vira app de iPhone ═════
+   body.cf-mob é ligado pelo cofre.js quando a tela é estreita. */
+html{-webkit-tap-highlight-color:transparent}
+body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+body.cf-mob{padding-top:env(safe-area-inset-top)}
+body.cf-mob .lat{display:none}                                   /* a fileira de pílulas vira a barra de baixo */
+body.cf-mob .topo{position:static;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 10px;
+  align-items:start;padding:14px 16px 8px;background:var(--fundo);backdrop-filter:none;-webkit-backdrop-filter:none}
+body.cf-mob .topo .titulo{grid-column:1;grid-row:1;margin:0;min-width:0}
+body.cf-mob .topo .acoes{grid-column:2;grid-row:1;padding-top:2px}
+body.cf-mob .topo .seg{grid-column:1/-1;grid-row:2;width:100%}
+body.cf-mob .topo .acoes:has(#busca:not([hidden])){grid-column:1/-1;grid-row:3}
+body.cf-mob .titulo h2{font-size:26px;letter-spacing:-.035em}
+body.cf-mob .titulo p{font-size:12.5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+body.cf-mob #btBaixar{display:none}                              /* baixar CSV continua no menu "…" */
+body.cf-mob .bt{width:40px;height:40px;border-radius:12px}
+body.cf-mob .seg button{min-height:36px}
+body.cf-mob .titulo .vivo{display:inline-flex;margin-top:8px;padding:5px 10px;border-radius:999px;font-size:11.5px;gap:7px;width:auto;max-width:100%}
+body.cf-mob .titulo .vivo .txt{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.cf-mob .tela{padding:4px 12px calc(92px + env(safe-area-inset-bottom))}
+body.cf-mob .cart{padding:16px;border-radius:18px}
+body.cf-mob .menu{right:0;left:auto;max-width:calc(100vw - 32px);max-height:calc(100vh - 190px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+body.cf-mob .tema-chip{white-space:normal;max-width:100%}        /* nome de tema comprido empurrava a tela pro lado */
+/* aviso grande vira 2 linhas; toca pra ler inteiro */
+body.cf-mob .aviso{padding:12px 14px;cursor:pointer;position:relative}
+body.cf-mob .aviso:not(.cf-aberto) > div{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+body.cf-mob .aviso:not(.cf-aberto)::after{content:"ler";position:absolute;right:12px;bottom:10px;font-size:11px;font-weight:700;
+  color:var(--t2);background:inherit;padding-left:6px}
+body.cf-mob .folha{padding-bottom:env(safe-area-inset-bottom)}
+body.cf-mob #cf-toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+/* barra de abas */
+#cf-tabbar{position:fixed;left:0;right:0;bottom:0;z-index:55;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  padding:6px max(6px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));
+  background:color-mix(in srgb,var(--fundo) 84%,transparent);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-top:1px solid var(--borda)}
+#cf-tabbar button{border:0;background:none;color:var(--t3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font:600 10.5px/1.15 var(--sans);min-height:52px;padding:5px 2px;border-radius:12px;cursor:pointer;min-width:0;transition:color var(--rapido),transform var(--rapido)}
+#cf-tabbar button:active{transform:scale(.94)}
+#cf-tabbar button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#cf-tabbar svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#cf-tabbar button.on{color:var(--ac)}
+#cf-tabbar button.on svg{stroke-width:2.2}
+/* folha "Mais" */
+.cf-secs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cf-sec{display:flex;align-items:center;gap:10px;text-align:left;padding:13px 12px;border-radius:14px;border:1px solid var(--borda);
+  background:var(--carta);color:var(--t1);font:600 14px/1.2 var(--sans);cursor:pointer;min-height:56px;min-width:0}
+.cf-sec.on{border-color:var(--ac);background:var(--ac-fraco)}
+.cf-sec svg{width:20px;height:20px;flex:none;stroke:var(--ac);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cf-sec span{min-width:0;display:flex;flex-direction:column;gap:2px}
+.cf-sec small{font-size:11.5px;color:var(--t3);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cf-linha{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 4px;border:0;border-bottom:1px solid var(--borda);
+  background:none;color:var(--t1);font:500 15px/1.3 var(--sans);cursor:pointer}
+.cf-linha:last-child{border-bottom:0}
+.cf-linha svg{width:20px;height:20px;flex:none;stroke:var(--t2);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cf-linha em{margin-left:auto;font-style:normal;font-size:13px;color:var(--t3);max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.cf-mob .mnums{grid-template-columns:repeat(3,minmax(0,1fr))!important}   /* ficha do vídeo: 3 números por linha, sem cortar */
+body.cf-mob .mnums > div{padding:12px}
+body.cf-mob .mnums > div[style*="grid-column"]{grid-column:1/-1!important}   /* o "Tema" ocupava 4 colunas e forçava a 4ª */
+body.cf-mob .aviso:not(.cf-aberto) > div{padding-right:22px}
 
 </style>
 </head>
@@ -850,7 +904,7 @@ window.onYouTubeIframeAPIReady = function(){ window.apiPronta = true; };
 (() => {
   'use strict';
   const APP_ID = 'painel-de-bolso';
-  const APP_VERSION = '1.0';
+  const APP_VERSION = '1.1';
   const PASSOS = [{"f": "dados/youtube/dados.js", "flag": "semDadosArquivo"}, {"f": "dados/youtube/link-venda.js", "flag": "semLinkVenda"}, {"f": "dados/youtube/tracking.js", "flag": "semTracking"}, {"f": "dados/youtube/titulos.js", "flag": "semTitulos"}, {"trecho": "/* TÍTULO SEMPRE O ATUAL. A equipe sobe o vídeo com título provisório e o SEO troca depois;\n   e o dados.js pode ser mais velho que o vídeo. titulos.js vem da rotina automática e passa\n   por cima: renomeado aparece com o nome novo, e vídeo que ainda não entrou na coleta ganha\n   ficha mínima (só título/data/capa, sem métricas). */\n(function(){\n  if (typeof DADOS === \"undefined\" || !DADOS || typeof TITULOS === \"undefined\" || !TITULOS) return;\n  DADOS.videos = DADOS.videos || {};\n  Object.entries(TITULOS.videos || {}).forEach(([id, t]) => {\n    if (!t || !t.titulo) return;\n    const v = DADOS.videos[id];\n    if (v){ v.titulo = t.titulo; if (!v.thumb && t.thumb) v.thumb = t.thumb; return; }\n    DADOS.videos[id] = {titulo: t.titulo, publicado: t.publicado || null, dur_s: 0, curto: false,\n      thumb: t.thumb || `https://i.ytimg.com/vi/${id}/mqdefault.jpg`,\n      vitalicio: {views: 0, likes: 0, comentarios: 0}, so_titulo: true};\n  });\n})();"}, {"f": "dados/vendas/vendas.js", "flag": "semVendas"}, {"f": "dados/vendas/config.js", "flag": "semAoVivo"}, {"f": "dados/vendas/canais.js", "flag": "semCanais"}, {"f": "dados/meta/meta.js", "flag": "semMeta"}, {"f": "dados/vendas/historico.js", "flag": "semHistorico"}, {"f": "dados/temas.js", "flag": "semTemas"}, {"f": "dados/marcos.js", "flag": "semMarcos"}, {"f": "dados/youtube/studio.js", "flag": "semStudio"}, {"f": "dados/youtube/cta.js", "flag": "semCta"}, {"f": "dados/concorrencia.js", "flag": "semConc"}, {"f": "dados/fora-do-nicho.js", "flag": "semForaNicho"}];          // ordem dos <script> do painel.html (dados do cofre + trechos de código)
   const REPO_PADRAO = 'Jhonatas124/painel-dados';
   const KDF_ITER = 600000;
@@ -1015,7 +1069,7 @@ window.onYouTubeIframeAPIReady = function(){ window.apiPronta = true; };
     });
     const s = document.createElement('script');
     s.src = 'painel.js?v=' + APP_VERSION;
-    s.onload = () => { ligarMenu(); pintarPilulas(); };
+    s.onload = () => { ligarMenu(); ligarCelular(); pintarPilulas(); };
     s.onerror = () => { const el = document.getElementById('tela'); if (el) el.innerHTML = '<div class="cart"><div class="vaz"><b>Não consegui carregar o painel.</b> Confira a internet e abra de novo.</div></div>'; };
     document.body.appendChild(s);
   }
@@ -1024,6 +1078,89 @@ window.onYouTubeIframeAPIReady = function(){ window.apiPronta = true; };
     if (b) b.onclick = () => { try { window.fecharMenu && window.fecharMenu(); } catch (_) {} abrirFolha(); };
   }
   function recarregar() { location.reload(); }
+
+  /* ---------- modo celular: barra de abas embaixo + folha "Mais" ----------
+     O painel foi desenhado pro Mac (lateral com 11 seções). No iPhone a lateral some e as 4 seções
+     mais usadas viram abas; o resto (e tema, ajuda, cofre) fica em "Mais". Tudo lido do próprio #nav,
+     então seção nova ou desligada no painel aparece/some aqui sozinha. */
+  const MQ = matchMedia('(max-width: 760px)');
+  const PRIO = ['visao', 'vendas', 'videos', 'ideias', 'plat', 'hist', 'radar', 'publico', 'pago', 'recup', 'conc'];
+  const CURTO = { visao: 'Início', vendas: 'Vendas', videos: 'Vídeos', ideias: 'Próximo', plat: 'Plataformas', hist: 'Histórico', radar: 'Radar', publico: 'Audiência', pago: 'Tráfego', recup: 'Recuperação', conc: 'Concorrência' };
+  const IC = {
+    mais: '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>',
+    tema: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v1.5M12 19.5V21M4.2 4.2l1.1 1.1M18.7 18.7l1.1 1.1M3 12h1.5M19.5 12H21M4.2 19.8l1.1-1.1M18.7 5.3l1.1-1.1"/></svg>',
+    ajuda: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.3a2.9 2.9 0 1 1 3.6 2.8c-.5.2-.8.7-.8 1.2v.6"/><path d="M12 17h.01"/></svg>',
+    cofre: '<svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.3 7.5 9.5 4.4-1.2 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>',
+    vivo: '<svg viewBox="0 0 24 24"><path d="M3 12h4l3 7 4-14 3 7h4"/></svg>',
+    ajustes: '<svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>'
+  };
+  function itensNav() {
+    return [...document.querySelectorAll('#nav .item[data-tela]')].map(b => ({
+      k: b.dataset.tela, rot: ((b.querySelector('.rot') || {}).textContent || b.dataset.tela).trim(),
+      ic: (b.querySelector('.ic') || {}).innerHTML || '', vl: ((b.querySelector('.vl') || {}).textContent || '').trim(), on: b.classList.contains('on') }));
+  }
+  function moverVivo(celular) {
+    const v = document.getElementById('vivo'); if (!v) return;
+    const dest = celular ? document.querySelector('.topo .titulo') : document.querySelector('.lat .pe');
+    if (dest && v.parentElement !== dest) { if (celular) dest.appendChild(v); else dest.insertBefore(v, dest.firstChild); }
+  }
+  function montarCelular() {
+    const on = MQ.matches && St.painelNoAr;
+    document.body.classList.toggle('cf-mob', on);
+    moverVivo(on);
+    let bar = document.getElementById('cf-tabbar');
+    if (!on) { if (bar) bar.remove(); return; }
+    if (!bar) {
+      bar = document.createElement('nav'); bar.id = 'cf-tabbar'; bar.setAttribute('aria-label', 'Seções'); document.body.appendChild(bar);
+      bar.onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.k === '__mais') return abrirMais(); try { window.irPara(b.dataset.k); } catch (_) {} };
+    }
+    const itens = itensNav();
+    const principais = PRIO.map(k => itens.find(i => i.k === k)).filter(Boolean).slice(0, 4);
+    const atual = (itens.find(i => i.on) || {}).k || 'visao';
+    const noMais = !principais.some(i => i.k === atual);
+    const html = principais.map(i => `<button type="button" data-k="${esc(i.k)}" class="${i.k === atual ? 'on' : ''}" aria-current="${i.k === atual}">${i.ic}<span>${esc(CURTO[i.k] || i.rot)}</span></button>`).join('')
+      + `<button type="button" data-k="__mais" class="${noMais ? 'on' : ''}">${IC.mais}<span>${noMais ? esc(CURTO[atual] || 'Mais') : 'Mais'}</span></button>`;
+    if (bar.innerHTML !== html) bar.innerHTML = html;
+  }
+  function abrirMais() {
+    fecharFolha();
+    const itens = itensNav(), atual = (itens.find(i => i.on) || {}).k || 'visao';
+    const vivoTxt = ((document.getElementById('vivoTxt') || {}).textContent || '').trim();
+    const f = document.createElement('div'); f.id = 'cf-folha';
+    f.innerHTML = `<div class="cf-scrim"></div><div class="cf-sheet" role="dialog" aria-label="Mais">
+      <div class="cf-sheet-top"><h2>Seções</h2><button class="cf-x" data-f="x" aria-label="Fechar">×</button></div>
+      <div class="cf-secs">${itens.map(i => `<button type="button" class="cf-sec ${i.k === atual ? 'on' : ''}" data-k="${esc(i.k)}">${i.ic}<span>${esc(i.rot)}${i.vl ? `<small>${esc(i.vl)}</small>` : ''}</span></button>`).join('')}</div>
+      <div class="cf-card" style="gap:0;padding:4px 14px">
+        <button type="button" class="cf-linha" data-f="vivo">${IC.vivo}Vendas ao vivo<em>${esc(vivoTxt || 'buscar agora')}</em></button>
+        <button type="button" class="cf-linha" data-f="colunas">${IC.ajustes}Colunas e seções visíveis</button>
+        <button type="button" class="cf-linha" data-f="tema">${IC.tema}Claro / escuro</button>
+        <button type="button" class="cf-linha" data-f="ajuda">${IC.ajuda}Como ler este painel</button>
+        <button type="button" class="cf-linha" data-f="cofre">${IC.cofre}App e cofre${St.upd || St.novo ? '<em style="color:var(--ac)">novidade</em>' : ''}</button>
+      </div></div>`;
+    document.body.appendChild(f);
+    const on = (k, fn) => { const el = f.querySelector(`[data-f="${k}"]`); if (el) el.onclick = fn; };
+    const clicar = id => () => { fecharFolha(); const el = document.getElementById(id); if (el) el.click(); };
+    f.querySelector('.cf-scrim').onclick = fecharFolha; on('x', fecharFolha);
+    f.querySelectorAll('.cf-sec').forEach(b => b.onclick = () => { fecharFolha(); try { window.irPara(b.dataset.k); } catch (_) {} });
+    on('vivo', () => { const el = document.getElementById('vivo'); if (el) el.click(); fecharFolha(); toast('Buscando as vendas…'); });
+    on('tema', clicar('btTema')); on('ajuda', clicar('btAjuda')); on('cofre', () => abrirFolha());
+    on('colunas', () => { fecharFolha(); window.scrollTo({ top: 0 }); const b = document.getElementById('btMenu'); if (b) setTimeout(() => b.click(), 60); });
+  }
+  function ligarCelular() {
+    // depois de cada desenho do painel, a barra acompanha (seção aberta, seções ligadas)
+    if (typeof window.desenhar === 'function' && !window.desenhar._cf) {
+      const orig = window.desenhar;
+      window.desenhar = function () { const r = orig.apply(this, arguments); try { montarCelular(); } catch (_) {} return r; };
+      window.desenhar._cf = true;
+    }
+    if (MQ.addEventListener) MQ.addEventListener('change', montarCelular); else if (MQ.addListener) MQ.addListener(montarCelular);
+    document.addEventListener('click', e => {
+      if (!document.body.classList.contains('cf-mob')) return;
+      const a = e.target.closest('.aviso'); if (!a || e.target.closest('a,button')) return;
+      a.classList.toggle('cf-aberto');
+    });
+    montarCelular();
+  }
 
   /* ---------- telas de entrada (antes do painel) ---------- */
   const ICO_LOGO = '<svg viewBox="0 0 24 24"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>';

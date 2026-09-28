@@ -1,4 +1,4 @@
-/* Painel de Bolso 1.0 — script principal do painel (gerado de painel.html por montar_app.py).
+/* Painel de Bolso 1.1 — script principal do painel (gerado de painel.html por montar_app.py).
    Só código: os dados chegam trancados do cofre e são injetados antes deste arquivo. */
 "use strict";
 /* ══════════════════════════════════════════════════════════════════════════
