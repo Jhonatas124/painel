@@ -1,0 +1,1415 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Painel">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f4f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0b0e" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Painel de Bolso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+   PAINEL v23 — 17/09/2026 — desenho novo, do zero.
+
+   O que ele responde, em ordem: DE ONDE VEIO A VENDA. Primeiro o dinheiro e a
+   plataforma (YouTube · Instagram · TikTok), depois o canal (orgânico, tráfego
+   pago, recuperação), e só então as métricas de audiência do YouTube. A versão
+   anterior começava por views — que é o dado mais fácil, não o mais importante.
+
+   Desenho: barra lateral agrupada, cartões de canto redondo com sombra macia,
+   um cartão escuro de destaque com o número que manda, e variação em pílula ao
+   lado de cada número. Tipografia Inter em tudo — nada de monoespaçada na
+   interface, que era o que dava cara de tela gerada por robô.
+
+   Movimento: curva da Apple (cubic-bezier(.32,.72,0,1)) em tudo. Troca de tela
+   com desvanecer + subir, cartões entrando em cascata, números que contam até o
+   valor, e a pílula da lateral deslizando entre os itens. Tudo desliga sozinho
+   em prefers-reduced-motion.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root{
+  color-scheme: light;
+  --fundo:#f4f5f7; --carta:#ffffff; --carta-2:#f8f9fb; --carta-3:#eef0f4;
+  --borda:#e7e9ee; --borda-forte:#d8dce3;
+  --t1:#0c0e12; --t2:#5b6270; --t3:#99a0ad;
+  --ac:#00a06a; --ac-tx:#ffffff; --ac-fraco:rgba(0,160,106,.10); --ac-medio:rgba(0,160,106,.18);
+  --pos:#00a06a; --pos-fraco:rgba(0,160,106,.10);
+  --neg:#e0403f; --neg-fraco:rgba(224,64,63,.10);
+  --alerta:#e08c1a; --alerta-fraco:rgba(224,140,26,.12);
+  --yt:#e5252f; --ig:#d6337a; --tk:#0a9d96; --pdf:#7c5cf0; --nt:#9aa1ae;
+  --escuro:#12151b; --escuro-t1:#ffffff; --escuro-t2:rgba(255,255,255,.62); --escuro-linha:rgba(255,255,255,.12);
+  --r-g:20px; --r-m:14px; --r-p:10px;
+  --s-1:0 1px 2px rgba(12,14,18,.05);
+  --s-2:0 1px 3px rgba(12,14,18,.05), 0 10px 26px -12px rgba(12,14,18,.14);
+  --s-3:0 24px 70px -20px rgba(12,14,18,.30);
+  --mola:cubic-bezier(.32,.72,0,1);
+  --rapido:.18s var(--mola);
+  --medio:.34s var(--mola);
+  --lento:.52s var(--mola);
+  --lateral:252px;
+  --sans:"Inter",ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-tema="claro"]){
+  color-scheme: dark;
+  --fundo:#0a0b0e; --carta:#141619; --carta-2:#1a1d22; --carta-3:#22262c;
+  --borda:#24272e; --borda-forte:#333842;
+  --t1:#f2f4f7; --t2:#9ba3b0; --t3:#6b7280;
+  --ac:#2fd08a; --ac-tx:#06251a; --ac-fraco:rgba(47,208,138,.13); --ac-medio:rgba(47,208,138,.22);
+  --pos:#2fd08a; --pos-fraco:rgba(47,208,138,.13);
+  --neg:#ff6369; --neg-fraco:rgba(255,99,105,.13);
+  --alerta:#f0b34a; --alerta-fraco:rgba(240,179,74,.14);
+  --yt:#ff4d4d; --ig:#f472b6; --tk:#2dd4cf; --pdf:#a78bfa; --nt:#7b8494;
+  --escuro:#1c2128; --escuro-t1:#ffffff; --escuro-t2:rgba(255,255,255,.60); --escuro-linha:rgba(255,255,255,.10);
+  --s-1:0 1px 2px rgba(0,0,0,.4);
+  --s-2:0 1px 3px rgba(0,0,0,.4), 0 12px 32px -14px rgba(0,0,0,.7);
+  --s-3:0 30px 80px -24px rgba(0,0,0,.8);
+}}
+:root[data-tema="escuro"]{
+  color-scheme: dark;
+  --fundo:#0a0b0e; --carta:#141619; --carta-2:#1a1d22; --carta-3:#22262c;
+  --borda:#24272e; --borda-forte:#333842;
+  --t1:#f2f4f7; --t2:#9ba3b0; --t3:#6b7280;
+  --ac:#2fd08a; --ac-tx:#06251a; --ac-fraco:rgba(47,208,138,.13); --ac-medio:rgba(47,208,138,.22);
+  --pos:#2fd08a; --pos-fraco:rgba(47,208,138,.13);
+  --neg:#ff6369; --neg-fraco:rgba(255,99,105,.13);
+  --alerta:#f0b34a; --alerta-fraco:rgba(240,179,74,.14);
+  --yt:#ff4d4d; --ig:#f472b6; --tk:#2dd4cf; --pdf:#a78bfa; --nt:#7b8494;
+  --escuro:#1c2128; --escuro-t1:#ffffff; --escuro-t2:rgba(255,255,255,.60); --escuro-linha:rgba(255,255,255,.10);
+  --s-1:0 1px 2px rgba(0,0,0,.4);
+  --s-2:0 1px 3px rgba(0,0,0,.4), 0 12px 32px -14px rgba(0,0,0,.7);
+  --s-3:0 30px 80px -24px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+html,body{background:var(--fundo)}
+body{margin:0;color:var(--t1);font:400 14px/1.5 var(--sans);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  font-variant-numeric:tabular-nums;font-feature-settings:"cv05" 1,"ss03" 1}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.022em;color:var(--t1)}
+button{font-family:inherit}
+a{color:var(--ac);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+::selection{background:var(--ac-medio)}
+:focus-visible{outline:2px solid var(--ac);outline-offset:3px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+
+/* ═════ estrutura ═════ */
+.app{display:grid;grid-template-columns:var(--lateral) minmax(0,1fr);min-height:100vh}
+
+/* ——— barra lateral ——— */
+.lat{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:2px;
+  padding:22px 14px 16px;background:var(--fundo);border-right:1px solid var(--borda);overflow-y:auto;overscroll-behavior:contain}
+.lat::-webkit-scrollbar{width:0}
+.marca{display:flex;align-items:center;gap:11px;padding:0 10px 22px;min-width:0}
+.marca .sig{width:36px;height:36px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:var(--ac);color:var(--ac-tx);font-weight:700;font-size:14px;letter-spacing:-.03em;
+  overflow:hidden}
+.marca .sig.foto{background:var(--carta-3);box-shadow:0 0 0 1px var(--borda)}
+.marca .sig img{width:100%;height:100%;object-fit:cover;display:block}
+.marca .nm{min-width:0}
+.marca h1{font-size:14.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.marca .sub{font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+
+.grupo{font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);
+  padding:16px 12px 7px}
+.grupo:first-of-type{padding-top:2px}
+#nav{display:flex;flex-direction:column}
+.nav{position:relative;display:flex;flex-direction:column;gap:1px}
+/* a pílula que desliza: um único elemento que se move, não um fundo por botão */
+.bolha{position:absolute;left:0;right:0;border-radius:12px;background:var(--ac);
+  transition:transform var(--medio),height var(--medio),opacity var(--rapido);pointer-events:none;z-index:0;opacity:0}
+.item{position:relative;z-index:1;display:flex;align-items:center;gap:11px;width:100%;
+  padding:9px 12px;border:0;background:none;border-radius:12px;cursor:pointer;
+  font-size:13.5px;font-weight:500;color:var(--t2);text-align:left;
+  transition:color var(--rapido),background var(--rapido)}
+.item:hover{color:var(--t1);background:var(--carta-3)}
+.item.on,.item.on:hover{color:var(--ac-tx);background:transparent}
+.item .ic{width:18px;height:18px;flex:none;display:grid;place-items:center;opacity:.85}
+.item .ic svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.item .rot{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .vl{font-size:12px;font-weight:600;color:var(--t3);white-space:nowrap;letter-spacing:-.02em}
+.item.on .vl{color:var(--ac-tx);opacity:.75}
+
+.pe{margin-top:auto;padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.vivo{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:12px;background:var(--carta);
+  border:1px solid var(--borda);cursor:pointer;font-size:12px;color:var(--t2);text-align:left;width:100%;
+  transition:border-color var(--rapido),transform var(--rapido)}
+.vivo:hover{border-color:var(--borda-forte)}
+.vivo:active{transform:scale(.985)}
+.vivo .ponto{width:7px;height:7px;border-radius:50%;background:var(--t3);flex:none}
+.vivo.on .ponto{background:var(--pos);box-shadow:0 0 0 0 var(--pos-fraco);animation:pulsa 2.4s var(--mola) infinite}
+.vivo.off .ponto{background:var(--neg)}
+.vivo b{font-weight:600;color:var(--t1)}
+@keyframes pulsa{0%{box-shadow:0 0 0 0 var(--pos-fraco)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.pezinho{display:flex;gap:6px}
+.pezinho button{flex:1;padding:9px;border-radius:11px;border:1px solid var(--borda);background:var(--carta);
+  color:var(--t2);cursor:pointer;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:color var(--rapido),border-color var(--rapido),transform var(--rapido)}
+.pezinho button:hover{color:var(--t1);border-color:var(--borda-forte)}
+.pezinho button:active{transform:scale(.97)}
+.pezinho svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ——— topo ——— */
+.principal{min-width:0;display:flex;flex-direction:column}
+.topo{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:20px 30px 16px;background:color-mix(in srgb,var(--fundo) 86%,transparent);
+  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+.titulo{margin-right:auto;min-width:0}
+.titulo h2{font-size:23px;line-height:1.2;letter-spacing:-.03em}
+.titulo p{margin:3px 0 0;font-size:12.5px;color:var(--t3)}
+
+/* controle segmentado (períodos) — indicador que desliza, sem contorno por botão */
+.seg{position:relative;display:inline-flex;padding:3px;border-radius:12px;background:var(--carta-3);flex:none}
+.seg .desl{position:absolute;top:3px;bottom:3px;border-radius:9px;background:var(--carta);box-shadow:var(--s-1);
+  transition:transform var(--medio),width var(--medio);z-index:0}
+.seg button{position:relative;z-index:1;border:0;background:none;cursor:pointer;padding:6px 12px;border-radius:9px;
+  font-size:12.5px;font-weight:500;color:var(--t2);white-space:nowrap;transition:color var(--rapido)}
+.seg button:hover{color:var(--t1)}
+.seg button.on{color:var(--t1);font-weight:600}
+
+.acoes{display:flex;gap:7px;align-items:center;position:relative}
+.bt{width:36px;height:36px;border-radius:11px;border:1px solid var(--borda);background:var(--carta);color:var(--t2);
+  cursor:pointer;display:grid;place-items:center;transition:color var(--rapido),border-color var(--rapido),transform var(--rapido)}
+.bt:hover{color:var(--t1);border-color:var(--borda-forte)}
+.bt:active{transform:scale(.94)}
+.bt.on{background:var(--t1);border-color:var(--t1);color:var(--fundo)}
+.bt svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.campo{border:1px solid var(--borda);background:var(--carta);color:var(--t1);border-radius:11px;
+  padding:8px 13px;font:400 13px var(--sans);width:230px;transition:border-color var(--rapido),width var(--medio)}
+.campo::placeholder{color:var(--t3)}
+.campo:focus{outline:0;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-fraco)}
+
+.menu{position:absolute;top:44px;right:0;z-index:60;width:272px;padding:7px;border-radius:16px;
+  background:var(--carta);border:1px solid var(--borda);box-shadow:var(--s-3);
+  transform-origin:top right;animation:brota var(--medio)}
+@keyframes brota{from{opacity:0;transform:scale(.94) translateY(-6px)}to{opacity:1;transform:none}}
+.menu .tt{font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);padding:11px 10px 7px}
+.menu .tt:first-child{padding-top:5px}
+.mit{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;background:none;border-radius:10px;
+  cursor:pointer;font-size:13px;color:var(--t2);text-align:left;transition:background var(--rapido),color var(--rapido)}
+.mit:hover{background:var(--carta-3);color:var(--t1)}
+.mit svg{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.menu hr{border:0;border-top:1px solid var(--borda);margin:6px 4px}
+.chaves{display:flex;flex-wrap:wrap;gap:5px;padding:0 6px 4px}
+.chave{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px solid var(--borda);
+  background:none;cursor:pointer;font-size:12px;font-weight:500;color:var(--t3);
+  transition:all var(--rapido)}
+.chave::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--t3);transition:background var(--rapido)}
+.chave.on{color:var(--t1);border-color:var(--ac);background:var(--ac-fraco)}
+.chave.on::before{background:var(--ac)}
+.chave:hover{border-color:var(--borda-forte)}
+
+/* ——— área de conteúdo ——— */
+.tela{padding:6px 30px 60px;max-width:1560px;width:100%}
+/* troca de tela: desvanece e sobe — a mesma sensação de trocar de aba no iOS */
+.tela.entra{animation:entra var(--lento)}
+@keyframes entra{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* cartões entram em cascata, 40ms um do outro */
+.casc > *{animation:sobe var(--lento) backwards}
+.casc > *:nth-child(1){animation-delay:.02s} .casc > *:nth-child(2){animation-delay:.06s}
+.casc > *:nth-child(3){animation-delay:.10s} .casc > *:nth-child(4){animation-delay:.14s}
+.casc > *:nth-child(5){animation-delay:.18s} .casc > *:nth-child(6){animation-delay:.22s}
+.casc > *:nth-child(n+7){animation-delay:.26s}
+@keyframes sobe{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+
+/* ═════ cartões ═════ */
+.grade{display:grid;gap:16px;margin-bottom:16px}
+.g-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g-auto{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+/* cinco cartões lado a lado: o número encolhe um pouco em vez de ser cortado */
+.g-auto .val{font-size:clamp(22px,2.1vw,30px)}
+.g-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-h{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}
+.g-h2{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)}
+.cart{background:var(--carta);border:1px solid var(--borda);border-radius:var(--r-g);padding:20px 22px;
+  box-shadow:var(--s-1);min-width:0;transition:box-shadow var(--medio),transform var(--medio),border-color var(--medio)}
+.cart.clic{cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%;display:block}
+.cart.clic:hover{box-shadow:var(--s-2);transform:translateY(-2px);border-color:var(--borda-forte)}
+.cart.clic:active{transform:translateY(0) scale(.995)}
+.cart > .cab{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}
+.cart h3{font-size:15px;letter-spacing:-.02em}
+.cart .leg{font-size:12px;color:var(--t3);margin-top:3px;line-height:1.45}
+
+/* o cartão escuro: o número que manda na tela */
+.heroi{background:var(--escuro);border-color:transparent;color:var(--escuro-t1);position:relative;overflow:hidden;
+  display:flex;flex-direction:column}
+.heroi::after{content:"";position:absolute;right:-70px;top:-90px;width:290px;height:290px;border-radius:50%;
+  background:radial-gradient(circle,var(--ac-medio),transparent 68%);pointer-events:none}
+.heroi h3,.heroi .rot{color:var(--escuro-t2)}
+.heroi .val{color:var(--escuro-t1)}
+.heroi .leg{color:var(--escuro-t2)}
+.rot{font-size:12.5px;font-weight:500;color:var(--t3);display:flex;align-items:center;gap:8px}
+.val{font-size:34px;font-weight:600;letter-spacing:-.035em;line-height:1.1;margin:9px 0 0;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.heroi .val{font-size:44px}
+.val .cent{font-size:.56em;font-weight:500;opacity:.55;letter-spacing:-.01em}
+.sub{font-size:12.5px;color:var(--t3);margin-top:7px;line-height:1.45}
+/* o total da venda, embaixo da parte dele */
+.bruto{font-size:12.5px;font-weight:500;color:var(--t3);margin-top:5px;letter-spacing:-.01em;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.heroi .bruto{color:var(--escuro-t2);font-size:13.5px}
+.tot-g .bruto{font-size:11px;margin-top:2px}
+td .bruto{font-size:11px;margin-top:2px;font-weight:400}
+.heroi .sub{color:var(--escuro-t2)}
+
+/* a pílula de variação */
+.var{display:inline-flex;align-items:center;gap:5px;padding:4px 9px 4px 7px;border-radius:999px;
+  font-size:11.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;margin-top:11px;align-self:flex-start}
+.var.up{background:var(--pos-fraco);color:var(--pos)}
+.var.dn{background:var(--neg-fraco);color:var(--neg)}
+.var.eq{background:var(--carta-3);color:var(--t3)}
+.heroi .var.eq{background:var(--escuro-linha);color:var(--escuro-t2)}
+.var svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.var small{font-weight:500;opacity:.72;letter-spacing:0}
+
+/* ícone redondo do cartão */
+.selo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none;background:var(--carta-3);color:var(--t2)}
+.selo svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.selo.yt{background:color-mix(in srgb,var(--yt) 13%,transparent);color:var(--yt)}
+.selo.ig{background:color-mix(in srgb,var(--ig) 13%,transparent);color:var(--ig)}
+.selo.tk{background:color-mix(in srgb,var(--tk) 15%,transparent);color:var(--tk)}
+.selo.ac{background:var(--ac-fraco);color:var(--ac)}
+.selo.al{background:var(--alerta-fraco);color:var(--alerta)}
+.selo.ng{background:var(--neg-fraco);color:var(--neg)}
+/* tamanho e traço padrão de TODO ícone. Especificidade baixa de propósito: quem já tem
+   regra própria (.selo svg, .bt svg, .item .ic svg) continua mandando. */
+.ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.75;
+  stroke-linecap:round;stroke-linejoin:round}
+.rot .ico{width:15px;height:15px;opacity:.8}
+.var .ico{width:12px;height:12px;stroke-width:2.4}
+
+/* ═════ plataformas: a pergunta central do painel ═════ */
+.plat{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--borda)}
+.plat:last-child{border-bottom:0}
+.plat .pto{width:9px;height:9px;border-radius:3px;flex:none}
+.plat .nm{font-size:13.5px;font-weight:500;flex:none;min-width:96px}
+.plat .trilho{flex:1;height:8px;border-radius:99px;background:var(--carta-3);overflow:hidden;min-width:30px}
+.plat .ench{display:block;height:100%;border-radius:99px;transform-origin:left;
+  animation:cresce .8s var(--mola) backwards}
+@keyframes cresce{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.plat .qt{font-size:13.5px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;min-width:82px;text-align:right}
+.plat .pc{font-size:12px;color:var(--t3);white-space:nowrap;min-width:38px;text-align:right}
+
+/* rosca */
+.rosca{display:flex;align-items:center;gap:26px;flex-wrap:wrap;justify-content:center}
+.rosca svg{flex:none}
+.rosca .fatia{transition:opacity var(--rapido),transform var(--rapido);transform-origin:center;cursor:default}
+.rosca svg:hover .fatia{opacity:.42}
+.rosca svg .fatia:hover{opacity:1;transform:scale(1.035)}
+.rosca .meio .n{font-size:21px;font-weight:600;letter-spacing:-.03em;fill:var(--t1)}
+.rosca .meio .l{font-size:10.5px;fill:var(--t3);font-weight:500}
+.rleg{display:flex;flex-direction:column;gap:11px;flex:1 1 210px;min-width:190px}
+.rleg > div{display:flex;align-items:center;gap:9px;font-size:13px;min-width:0}
+.rleg .pto{width:9px;height:9px;border-radius:3px;flex:none}
+.rleg .nm{color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rleg .vv{margin-left:auto;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
+
+/* ═════ listas de vídeo ═════ */
+.lista{display:flex;flex-direction:column}
+.lin{display:grid;grid-template-columns:26px 78px minmax(0,1fr) auto;gap:14px;align-items:center;
+  padding:10px 10px;margin:0 -10px;border-radius:12px;cursor:pointer;background:none;border:0;
+  text-align:left;font:inherit;color:inherit;width:calc(100% + 20px);
+  transition:background var(--rapido),transform var(--rapido)}
+.lin:hover{background:var(--carta-3)}
+.lin:active{transform:scale(.995)}
+.lin .pos{font-size:12px;font-weight:600;color:var(--t3);text-align:center;letter-spacing:-.02em}
+.lin .capa{width:78px;height:44px;border-radius:9px;object-fit:cover;background:var(--carta-3);display:block}
+.lin .semcapa{width:78px;height:44px;border-radius:9px;background:var(--carta-3);display:grid;place-items:center;
+  font-size:9.5px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
+.lin .txt{min-width:0}
+.lin .tt{font-size:13px;font-weight:500;line-height:1.35;overflow:hidden;text-overflow:ellipsis;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.lin .mt{font-size:11.5px;color:var(--t3);margin-top:3px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.lin .dir{text-align:right;white-space:nowrap}
+.lin .dir b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-.025em}
+.lin .dir span{font-size:11.5px;color:var(--t3)}
+.lin.naovideo{cursor:default}
+.lin.naovideo:hover{background:none}
+
+.selo-p{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:600;
+  letter-spacing:.01em;background:var(--carta-3);color:var(--t2)}
+.selo-p .pto{width:6px;height:6px;border-radius:50%}
+.selo-p.yt{background:color-mix(in srgb,var(--yt) 12%,transparent);color:var(--yt)}
+.selo-p.ig{background:color-mix(in srgb,var(--ig) 12%,transparent);color:var(--ig)}
+.selo-p.tk{background:color-mix(in srgb,var(--tk) 14%,transparent);color:var(--tk)}
+.selo-p.pdf{background:color-mix(in srgb,var(--pdf) 14%,transparent);color:var(--pdf)}
+
+/* ═════ tabela ═════ */
+.tab-caixa{background:var(--carta);border:1px solid var(--borda);border-radius:var(--r-g);box-shadow:var(--s-1);overflow:hidden}
+.tab-topo{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px 14px;flex-wrap:wrap}
+.rolagem{overflow-x:auto}
+.rolagem::-webkit-scrollbar{height:9px}
+.rolagem::-webkit-scrollbar-thumb{background:var(--carta-3);border-radius:99px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:11px 14px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--borda)}
+th{font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);
+  cursor:pointer;user-select:none;transition:color var(--rapido);background:var(--carta-2)}
+th:hover{color:var(--t1)}
+th.on{color:var(--ac)}
+th .seta{opacity:0;margin-left:3px;transition:opacity var(--rapido)}
+th.on .seta{opacity:1}
+td{color:var(--t1);font-weight:500;letter-spacing:-.015em}
+tbody tr{cursor:pointer;transition:background var(--rapido)}
+tbody tr:hover{background:var(--carta-2)}
+tbody tr:last-child td{border-bottom:0}
+td.vid,th.vid{text-align:left;white-space:normal;min-width:330px;font-weight:400}
+th.mini,td.mini{text-align:center;width:46px}
+.vcel{display:flex;gap:12px;align-items:center;min-width:0}
+.vcel img{width:70px;height:39px;border-radius:8px;object-fit:cover;flex:none;background:var(--carta-3)}
+.vcel .t{font-size:13px;font-weight:500;line-height:1.35;max-width:560px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vcel .d{font-size:11.5px;color:var(--t3);margin-top:3px}
+.barra-cel{position:relative;display:inline-block;min-width:76px;text-align:right;padding-bottom:7px}
+.barra-cel .tr{position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:99px;background:var(--carta-3)}
+.barra-cel .pr{position:absolute;left:0;bottom:0;height:3px;border-radius:99px;background:var(--ac);
+  transform-origin:left;animation:cresce .7s var(--mola) backwards}
+.barra-cel .md{position:absolute;bottom:-2px;width:2px;height:7px;border-radius:99px;background:var(--t3);opacity:.7}
+.nd{color:var(--t3);font-weight:400}
+.conv{display:block;font-size:11px;color:var(--t3);font-weight:400;margin-top:2px;letter-spacing:0}
+.ritmo{display:inline-flex;align-items:center;gap:4px;font-weight:600;font-size:12.5px}
+.ritmo.up{color:var(--pos)} .ritmo.dn{color:var(--neg)} .ritmo.eq{color:var(--t3)}
+.lk{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;border:1px solid var(--borda);
+  color:var(--t3);transition:all var(--rapido)}
+.lk:hover{background:var(--ac);border-color:var(--ac);color:var(--ac-tx);text-decoration:none}
+.lk svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.vendalink{cursor:pointer;border-bottom:1.5px dotted var(--t3);transition:color var(--rapido),border-color var(--rapido)}
+.vendalink:hover{color:var(--ac);border-color:var(--ac)}
+.mais{width:100%;padding:15px;border:0;border-top:1px solid var(--borda);background:none;color:var(--t2);
+  cursor:pointer;font-size:12.5px;font-weight:600;transition:background var(--rapido),color var(--rapido)}
+.mais:hover{background:var(--carta-2);color:var(--t1)}
+
+/* ═════ gráficos ═════ */
+.svgb{position:relative}
+.gsvg{width:100%;height:auto;display:block;overflow:visible}
+.gsvg text{font-size:11px;fill:var(--t3);font-family:var(--sans);font-weight:500}
+.gsvg .lin-g{stroke:var(--borda);stroke-width:1}
+.gsvg .area{animation:revela .9s var(--mola) backwards}
+.gsvg .traco{stroke-linecap:round;stroke-linejoin:round;fill:none;
+  stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:risca 1.1s var(--mola) forwards}
+@keyframes risca{to{stroke-dashoffset:0}}
+@keyframes revela{from{opacity:0}to{opacity:1}}
+.gsvg .colu{transform-origin:center bottom;animation:estica .7s var(--mola) backwards}
+@keyframes estica{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.dica{position:absolute;pointer-events:none;background:var(--escuro);color:#fff;border-radius:11px;padding:9px 12px;
+  font-size:12px;line-height:1.5;white-space:nowrap;opacity:0;z-index:8;box-shadow:var(--s-3);
+  transition:opacity var(--rapido),transform var(--rapido);transform:translateY(4px)}
+.dica.ver{opacity:1;transform:none}
+.dica b{font-weight:600}
+.dica .l{color:rgba(255,255,255,.6)}
+/* próximo vídeo / radar (22/09/2026) */
+.conc-lista{display:flex;flex-direction:column;gap:14px}
+.conc-v{border-bottom:1px solid var(--linha,rgba(0,0,0,.08));padding-bottom:12px}
+.conc-v:last-child{border-bottom:0}
+.conc-v .ideia-ev{font-size:12.5px;margin-top:6px}
+.tab-conc{overflow-x:auto}.tab-conc table{width:100%;border-collapse:collapse;font-size:13px}
+.tab-conc th{text-align:left!important;color:var(--t3);font-weight:600;font-size:11.5px;padding:6px 8px;white-space:nowrap}
+.tab-conc td{text-align:left!important;padding:8px;border-top:1px solid var(--linha,rgba(0,0,0,.08));vertical-align:top}
+.tab-conc a{color:inherit}
+
+.tema-chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;background:var(--carta-3);color:var(--t2);font-size:11px;font-weight:600;white-space:nowrap}
+.tema-chip.ac{background:var(--ac-fraco);color:var(--ac)}
+.ideia{display:flex;flex-direction:column;gap:10px}
+.ideia .rot{display:flex;align-items:center;gap:9px}
+.ideia-t{font-size:20px;line-height:1.25;margin:2px 0 0}
+.ideia-chips{display:flex;gap:6px;flex-wrap:wrap}
+.ideia-ev{margin:4px 0 0;padding-left:18px;color:var(--t2);font-size:13px;line-height:1.55}
+.ideia-ev b{color:var(--t1)}
+.ideia-sub{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);font-weight:600;margin-top:8px}
+.ideia-ang{margin:0;padding-left:20px;font-size:13.5px;font-weight:600;line-height:1.45}
+.ideia-ang li{margin-bottom:5px}
+.ideia.vende{border-top:3px solid var(--ac)}.ideia.cresce{border-top:3px solid var(--t1)}.ideia.descobre{border-top:3px solid var(--alerta)}
+.ideia-fora{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:center;text-decoration:none;color:inherit;
+  padding:8px;border-radius:12px;transition:background var(--rapido)}
+.ideia-fora:hover{background:var(--carta-2)}
+.ideia-fora img{width:96px;height:54px;border-radius:8px;object-fit:cover;background:var(--carta-3)}
+.ideia-fora > span{display:flex;flex-direction:column;gap:3px;min-width:0;font-size:13px}
+.ideia-fora > span > span{color:var(--t3);font-size:12px}
+.ideia-fora em{font-style:normal;font-weight:700;font-size:15px}.ideia-fora em small{font-weight:500;color:var(--t3);font-size:11px}
+.lista-fora{display:flex;flex-direction:column;gap:2px}
+.funil{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 12px}
+.funil i{font-style:normal;color:var(--t3);font-size:20px}
+.funil-p{display:flex;flex-direction:column;gap:2px;min-width:150px}.funil-p b{font-size:26px}
+.funil-p span{color:var(--t2);font-size:12.5px}.funil-p em{font-style:normal;color:var(--t3);font-size:12px}
+.cta-l{display:grid;grid-template-columns:22px 104px 1fr auto;gap:10px;align-items:center;padding:7px 8px;border-radius:10px;font-size:13px;cursor:pointer}
+.cta-l:hover{background:var(--carta-2)}
+.cta-l b{width:20px;height:20px;border-radius:6px;background:var(--alerta-fraco);color:var(--alerta);display:grid;place-items:center;font-size:11px}
+.cta-l .t{font-variant-numeric:tabular-nums;color:var(--t2)}.cta-l .f{color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cta-l .p{font-weight:600;white-space:nowrap}.cta-l .p em{font-style:normal;font-weight:500;color:var(--t3);margin-left:4px}
+.gsvg .marco{fill:var(--alerta);stroke:var(--carta);stroke-width:1.5}
+.heroi .gsvg .marco{stroke:var(--escuro)}
+.dicaG .dd-marco{color:#ffc46b}
+/* dica única do painel + guia + bolinha (22/09/2026) */
+.dicaG{border:1px solid rgba(255,255,255,.1);position:fixed;white-space:normal;max-width:330px;min-width:190px;z-index:60;transform:none;transition:opacity var(--rapido)}
+.dicaG .dd-sec{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.12)}
+.dicaG .dd-t{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:2px}
+.dicaG .dd-v{display:flex;justify-content:space-between;gap:10px}
+.dicaG .dd-v span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,.85)}
+.dicaG .dd-pt{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:5px}
+.dicaG .dd-neg{color:#ff8a80}
+.guia{position:absolute;width:0;border-left:1.5px dashed var(--t3);pointer-events:none;opacity:0;transition:opacity .12s}
+.guia.faixa{border:0;background:var(--t1);border-radius:6px}
+.guia.ver{opacity:.6}.guia.faixa.ver{opacity:.07}
+.heroi .guia{border-color:rgba(255,255,255,.5)}.heroi .guia.faixa{background:#fff}
+.pino{position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--c);
+  box-shadow:0 0 0 2.5px var(--carta),0 1px 5px rgba(0,0,0,.35);pointer-events:none;z-index:3}
+.heroi .pino{box-shadow:0 0 0 2.5px var(--escuro),0 1px 5px rgba(0,0,0,.35)}
+.gsvg{touch-action:pan-y}
+.leg-g{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:var(--t2)}
+.leg-g span{display:inline-flex;align-items:center;gap:7px}
+.leg-g i{width:9px;height:9px;border-radius:3px}
+.tot-g{display:flex;gap:32px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--borda)}
+.tot-g > div{min-width:0}
+.tot-g .r{font-size:11.5px;color:var(--t3);font-weight:500}
+.tot-g .v{font-size:19px;font-weight:600;letter-spacing:-.03em;margin-top:3px}
+
+/* ═════ avisos e vazios ═════ */
+.aviso{display:flex;gap:13px;align-items:flex-start;padding:15px 18px;border-radius:var(--r-m);margin-bottom:16px;
+  background:var(--alerta-fraco);border:1px solid color-mix(in srgb,var(--alerta) 24%,transparent);
+  font-size:12.5px;line-height:1.55;color:var(--t2);animation:sobe var(--lento) backwards}
+.aviso b{color:var(--t1);font-weight:600}
+.reemb-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:14px}
+.reemb-nums>div{padding:0 20px;border-left:1px solid var(--borda);min-width:0}
+.reemb-nums>div:first-child{padding-left:0;border-left:0}
+.reemb-nums .val{font-size:28px;margin-top:4px}
+.reemb-nums .sub{margin-top:4px}
+.reemb-det{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:28px;margin-top:20px;padding-top:18px;border-top:1px solid var(--borda)}
+.reemb-det>div:only-child{grid-column:1/-1}
+.reemb.alto{border-color:color-mix(in srgb,var(--neg) 26%,var(--borda))}
+@media (max-width:760px){
+  .reemb-nums,.reemb-det{grid-template-columns:minmax(0,1fr)}
+  .reemb-nums>div{padding:12px 0 0;border-left:0;border-top:1px solid var(--borda);margin-top:12px}
+  .reemb-nums>div:first-child{padding-top:0;border-top:0;margin-top:0}
+}
+.aviso.grave{background:var(--neg-fraco);border-color:color-mix(in srgb,var(--neg) 24%,transparent)}
+.aviso .selo{margin-top:-1px}
+.vaz{padding:30px 6px;text-align:center;color:var(--t3);font-size:13px;line-height:1.6}
+.vaz b{display:block;color:var(--t2);font-weight:600;font-size:14px;margin-bottom:5px}
+.vaz-p{color:var(--t3);font-size:12.5px;line-height:1.6;padding:8px 0}
+
+/* ═════ detalhes dobráveis ═════ */
+.dobra{background:var(--carta);border:1px solid var(--borda);border-radius:var(--r-g);box-shadow:var(--s-1);
+  margin-bottom:16px;overflow:hidden}
+.dobra summary{cursor:pointer;padding:18px 22px;font-size:14px;font-weight:600;list-style:none;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;transition:background var(--rapido)}
+.dobra summary:hover{background:var(--carta-2)}
+.dobra summary::-webkit-details-marker{display:none}
+.dobra summary .mais-ic{width:26px;height:26px;border-radius:8px;background:var(--carta-3);display:grid;place-items:center;
+  color:var(--t2);flex:none;transition:transform var(--medio)}
+.dobra summary .mais-ic svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+.dobra[open] summary .mais-ic{transform:rotate(45deg)}
+.dobra .corpo{padding:0 22px 20px;animation:sobe var(--medio)}
+.compras{width:100%;border-collapse:collapse;font-size:12.5px}
+.compras th,.compras td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--borda);white-space:nowrap}
+.compras th{background:none;cursor:default;font-size:10.5px}
+.compras td.d,.compras th.d{text-align:right}
+.compras tr:hover{background:var(--carta-2)}
+.email{color:var(--t3);font-size:11.5px}
+
+/* ═════ modal ═════ */
+/* o <dialog> ocupa a tela inteira e CENTRA a folha. Com max-width:none o centramento
+   nativo por margin:auto some, e o modal grudava no topo. */
+dialog{padding:0;border:0;background:transparent;max-width:100vw;max-height:100vh;
+  width:100vw;height:100vh;overflow:visible;display:none}
+dialog[open]{display:grid;place-items:center}
+dialog::backdrop{background:rgba(6,8,11,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  animation:apaga var(--medio)}
+@keyframes apaga{from{opacity:0}to{opacity:1}}
+.folha{background:var(--carta);border:1px solid var(--borda);border-radius:24px;width:min(900px,94vw);
+  max-height:92vh;overflow:hidden auto;box-shadow:var(--s-3);animation:sobeModal var(--lento)}
+@keyframes sobeModal{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+.folha::-webkit-scrollbar{width:9px}
+.folha::-webkit-scrollbar-thumb{background:var(--carta-3);border-radius:99px}
+.palco{position:relative;width:100%;aspect-ratio:16/9;max-height:216px;background:#000;overflow:hidden;
+  transition:max-height var(--lento)}
+.palco.tocando{max-height:none}
+.palco img{width:100%;height:100%;object-fit:cover;display:block}
+.palco iframe{width:100%;height:100%;border:0;display:block}
+.play{position:absolute;inset:0;display:grid;place-items:center;border:0;cursor:pointer;padding:0;
+  background:linear-gradient(to bottom,rgba(0,0,0,.08),rgba(0,0,0,.5))}
+.play i{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.96);display:grid;place-items:center;
+  box-shadow:0 8px 28px rgba(0,0,0,.4);transition:transform var(--medio)}
+.play i::after{content:"";border-left:16px solid #12151b;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.play:hover i{transform:scale(1.09)}
+.play:active i{transform:scale(1.02)}
+.fecha{position:absolute;top:14px;right:14px;z-index:9;width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;
+  background:rgba(10,12,15,.62);color:#fff;display:grid;place-items:center;backdrop-filter:blur(8px);
+  transition:background var(--rapido),transform var(--rapido)}
+.fecha:hover{background:rgba(10,12,15,.85)}
+.fecha:active{transform:scale(.92)}
+.fecha svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+.mcab{padding:20px 24px 0}
+.mcab h3{font-size:18px;line-height:1.3}
+.mcab .mt{font-size:12.5px;color:var(--t3);margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.mnums{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:1px;background:var(--borda);
+  margin:18px 0 0;border-top:1px solid var(--borda);border-bottom:1px solid var(--borda)}
+.mnums div{background:var(--carta);padding:13px 16px;min-width:0}
+.mnums b{display:block;font-size:17px;font-weight:600;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mnums span{font-size:10.5px;color:var(--t3);font-weight:500;display:block;margin-top:2px}
+.mnums em{display:block;font-style:normal;font-size:11px;font-weight:600;margin-top:4px}
+.mnums em.acima{color:var(--pos)} .mnums em.abaixo{color:var(--neg)} .mnums em.igual{color:var(--t3)}
+.mcorpo{padding:20px 24px 24px}
+.msec{margin-top:22px;padding-top:18px;border-top:1px solid var(--borda)}
+.msec h4{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:11px}
+.msub{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:22px}
+.tl{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:5px 0 7px;position:relative;line-height:1.35}
+.tl .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;color:var(--t2)}
+.tl .n{margin-left:auto;font-size:11.5px;color:var(--t3);font-weight:500;white-space:nowrap}
+.tl .b{position:absolute;left:0;bottom:0;height:2px;border-radius:99px;background:var(--ac);opacity:.55;
+  transform-origin:left;animation:cresce .7s var(--mola) backwards}
+.serie{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--t2);margin-bottom:10px}
+.serie span{display:inline-flex;align-items:center;gap:7px}
+.serie i{width:15px;height:2.5px;border-radius:99px}
+.retn{color:var(--t3);font-size:12px;margin:-4px 0 14px}
+
+/* ═════ responsivo ═════ */
+@media (max-width:1340px){
+  .g-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g-h,.g-h2{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:1180px){
+  :root{--lateral:70px}
+  .lat{padding:18px 11px 14px;align-items:stretch}
+  .marca{justify-content:center;padding:0 0 20px}
+  .marca .nm{display:none}
+  .grupo{text-align:center;font-size:9px;letter-spacing:.06em;padding:14px 0 6px}
+  .item{justify-content:center;padding:11px 0}
+  .item .rot,.item .vl{display:none}
+  .vivo{justify-content:center;padding:11px 0}
+  .vivo .txt{display:none}
+  .pezinho{flex-direction:column}
+  .tela,.topo{padding-left:22px;padding-right:22px}
+  .g-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:880px){
+  .g-3,.g-4,.g-2{grid-template-columns:minmax(0,1fr)}
+  .titulo h2{font-size:20px}
+  .rosca{justify-content:center}
+}
+@media (max-width:720px){
+  :root{--lateral:0px}
+  .app{grid-template-columns:minmax(0,1fr)}
+  /* no celular a lateral vira uma barra que rola embaixo do cabeçalho */
+  /* uma fileira só que rola de lado. Sem nowrap os grupos quebravam em três linhas. */
+  .lat{position:static;height:auto;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:6px;
+    overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid var(--borda);
+    padding:12px 16px;scrollbar-width:none}
+  .lat > *{flex:none}
+  .lat::-webkit-scrollbar{display:none}
+  .marca{padding:0 10px 0 0;border-right:1px solid var(--borda);margin-right:4px}
+  .marca .nm{display:none}
+  .grupo{display:none}
+  #nav{flex-direction:row;gap:6px;align-items:center}
+  .nav{flex-direction:row;gap:4px;flex:none}
+  .bolha{display:none}
+  .item{width:auto;padding:8px 13px;border-radius:999px;background:var(--carta);border:1px solid var(--borda);white-space:nowrap}
+  .item .rot{display:block;font-size:12.5px}
+  .item.on{background:var(--ac);border-color:var(--ac);color:var(--ac-tx)}
+  .item .ic{display:none}
+  .pe{margin-top:0;padding-top:0;flex-direction:row;gap:6px;margin-left:auto}
+  .vivo{width:auto;padding:9px 12px;white-space:nowrap}
+  .vivo .txt{display:block;font-size:11.5px}
+  .pezinho{flex-direction:row}
+  .pezinho button{padding:9px 11px}
+  .topo{padding:16px}
+  .tela{padding:2px 16px 48px}
+  .titulo h2{font-size:19px}
+  .heroi .val{font-size:34px}
+  .val{font-size:28px}
+  .cart{padding:17px 18px}
+  .seg{overflow-x:auto;max-width:100%;scrollbar-width:none}
+  .seg::-webkit-scrollbar{display:none}
+  .campo{width:100%}
+  .lin{grid-template-columns:22px 58px minmax(0,1fr) auto;gap:10px}
+  .lin .capa,.lin .semcapa{width:58px;height:33px}
+  .plat .nm{min-width:74px;font-size:12.5px}
+  .plat .qt{min-width:66px;font-size:12.5px}
+  td.vid,th.vid{min-width:230px}
+  .vcel img{width:52px;height:29px}
+  dialog[open]{align-items:flex-end}
+  .folha{width:100vw;max-height:94vh;border-radius:22px 22px 0 0}
+  .mcab,.mcorpo{padding-left:18px;padding-right:18px}
+}
+</style>
+<style>
+/* ═════ Painel de Bolso — casca do app (cofre, trava, avisos). Usa as cores do painel. ═════ */
+body.cf-gate-on .app{display:none}
+body.cf-gate-on{overflow:hidden}
+#cf-gate{position:fixed;inset:0;z-index:2147480000;background:var(--fundo);overflow-y:auto;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:calc(28px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
+.cf-box{width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px;margin:auto 0}
+.cf-logo{width:64px;height:64px;border-radius:18px;background:var(--ac);color:var(--ac-tx);display:grid;place-items:center;
+  box-shadow:var(--s-2);margin:0 auto 4px}
+.cf-logo svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.cf-box h1{font-size:26px;text-align:center;letter-spacing:-.03em}
+.cf-box h2{font-size:19px;letter-spacing:-.02em}
+.cf-p{margin:0;color:var(--t2);font-size:15px;line-height:1.5}
+.cf-c{text-align:center}
+.cf-card{background:var(--carta);border:1px solid var(--borda);border-radius:var(--r-g);padding:16px;box-shadow:var(--s-1);
+  display:flex;flex-direction:column;gap:12px}
+.cf-field{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--t2);font-weight:500}
+.cf-in{font:400 16px/1.3 var(--sans);color:var(--t1);background:var(--carta-2);border:1px solid var(--borda-forte);
+  border-radius:12px;padding:12px 13px;width:100%;min-height:46px;-webkit-appearance:none;appearance:none}
+.cf-in:focus{outline:2px solid var(--ac);outline-offset:1px;border-color:transparent}
+.cf-in.cf-pin{text-align:center;letter-spacing:.5em;font-size:22px;font-weight:600}
+.cf-bt{font:600 15px/1.2 var(--sans);border:1px solid var(--borda-forte);background:var(--carta);color:var(--t1);
+  border-radius:12px;min-height:46px;padding:12px 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  -webkit-tap-highlight-color:transparent;transition:transform var(--rapido),opacity var(--rapido)}
+.cf-bt:active{transform:scale(.98)}
+.cf-bt[disabled]{opacity:.55;pointer-events:none}
+.cf-bt.pri{background:var(--ac);border-color:var(--ac);color:var(--ac-tx)}
+.cf-bt.fant{background:transparent;border-color:transparent;color:var(--t2)}
+.cf-bt.ruim{color:var(--neg)}
+.cf-bt.blk{width:100%}
+.cf-row{display:flex;gap:10px}
+.cf-row>.cf-bt{flex:1}
+.cf-err{margin:0;color:var(--neg);font-size:14px;font-weight:500}
+.cf-ok{color:var(--pos)}
+.cf-small{font-size:13px;color:var(--t3);line-height:1.45}
+.cf-list{margin:6px 0 0;padding-left:20px;line-height:1.55;color:var(--t2);font-size:14px}
+.cf-list li{margin:3px 0}
+details.cf-det{font-size:14px;color:var(--t2)}
+details.cf-det summary{cursor:pointer;color:var(--ac);font-weight:500;padding:4px 0}
+.cf-kv{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:9px 0;border-bottom:1px solid var(--borda)}
+.cf-kv:last-child{border-bottom:0}
+.cf-kv>span:first-child{color:var(--t2)}
+.cf-kv>span:last-child{text-align:right;font-weight:500}
+.cf-chip{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--pos-fraco);color:var(--pos)}
+.cf-chip.ruim{background:var(--neg-fraco);color:var(--neg)}
+.cf-chip.al{background:var(--alerta-fraco);color:var(--alerta)}
+.cf-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--carta-3);padding:4px;border-radius:12px}
+.cf-seg button{font:600 14px/1.2 var(--sans);border:0;background:transparent;color:var(--t2);border-radius:9px;min-height:40px;cursor:pointer}
+.cf-seg button[aria-pressed="true"]{background:var(--carta);color:var(--t1);box-shadow:var(--s-1)}
+.cf-seg button[disabled]{opacity:.4}
+.cf-spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--borda-forte);border-top-color:var(--ac);margin:8px auto;
+  animation:cfgira .8s linear infinite}
+@keyframes cfgira{to{transform:rotate(360deg)}}
+/* folha (ajustes do app) */
+#cf-folha{position:fixed;inset:0;z-index:2147481000;display:flex;align-items:flex-end;justify-content:center}
+#cf-folha .cf-scrim{position:absolute;inset:0;background:rgba(0,0,0,.42)}
+#cf-folha .cf-sheet{position:relative;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;background:var(--fundo);
+  border-radius:22px 22px 0 0;padding:18px 16px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;
+  box-shadow:var(--s-3);animation:cfsobe .32s var(--mola)}
+@media (min-width:760px){ #cf-folha{align-items:center} #cf-folha .cf-sheet{border-radius:22px;max-height:84vh} }
+@keyframes cfsobe{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.cf-sheet-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cf-x{width:36px;height:36px;border-radius:50%;border:0;background:var(--carta-3);color:var(--t2);font-size:20px;line-height:1;cursor:pointer}
+/* avisos flutuantes */
+.cf-pilula{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:2147482000;
+  max-width:92vw;border:0;border-radius:999px;padding:11px 18px;background:var(--ac);color:var(--ac-tx);
+  font:600 14px/1.3 var(--sans);box-shadow:0 10px 30px rgba(0,0,0,.28);cursor:pointer;animation:cfsobe .32s var(--mola)}
+.cf-pilula+.cf-pilula{top:calc(60px + env(safe-area-inset-top))}
+#cf-toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483000;
+  background:var(--escuro);color:var(--escuro-t1);padding:11px 16px;border-radius:14px;font:500 14px/1.35 var(--sans);
+  max-width:92vw;box-shadow:var(--s-3);pointer-events:none;opacity:0;transition:opacity .2s}
+#cf-toast.on{opacity:1}
+/* confirmação / segredo */
+#cf-dlg{position:fixed;inset:0;z-index:2147482500;display:grid;place-items:center;padding:16px}
+#cf-dlg .cf-scrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+#cf-dlg form{position:relative;width:100%;max-width:360px;background:var(--carta);border-radius:var(--r-g);padding:18px;
+  display:flex;flex-direction:column;gap:12px;box-shadow:var(--s-3)}
+/* no celular o botão "…" fica à esquerda: o menu abre pra direita e rola se não couber */
+@media (max-width:760px){
+  .menu{right:auto;left:0;max-width:calc(100vw - 32px);max-height:calc(100vh - 170px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .tema-chip{white-space:normal;max-width:100%}   /* nome de tema comprido empurrava a tela pro lado */
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ═════ barra lateral: a ordem aqui É a prioridade do painel ═════
+       Dinheiro primeiro, plataforma depois, audiência por último. -->
+  <aside class="lat">
+    <div class="marca">
+      <div class="sig">JS</div>
+      <div class="nm"><h1 id="nomeCanal">Painel</h1><div class="sub" id="subCanal">carregando…</div></div>
+    </div>
+    <nav id="nav" aria-label="seções"></nav>
+    <div class="pe">
+      <button class="vivo" id="vivo" title="clique pra buscar as vendas agora">
+        <span class="ponto"></span><span class="txt" id="vivoTxt">vendas</span>
+      </button>
+      <div class="pezinho">
+        <button id="btTema" title="claro / escuro (T)"><span id="icTema"></span></button>
+        <button id="btAjuda" title="como ler este painel (?)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.3a2.9 2.9 0 1 1 3.6 2.8c-.5.2-.8.7-.8 1.2v.6"/><path d="M12 17h.01"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="topo">
+      <div class="titulo"><h2 id="tituloTela">Visão geral</h2><p id="subTela"></p></div>
+      <div class="seg" id="periodos"></div>
+      <div class="acoes">
+        <input type="search" class="campo" id="busca" placeholder="filtrar por título…" hidden>
+        <button class="bt" id="btBusca" title="filtrar (/)">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+        </button>
+        <button class="bt" id="btBaixar" title="baixar a tabela em CSV (E)">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4 20h16"/></svg>
+        </button>
+        <button class="bt" id="btMenu" title="ajustes">
+          <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+        </button>
+        <div class="menu" id="menu" hidden>
+          <div class="tt">Colunas da tabela</div>
+          <button class="mit" data-modo="principal">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h9"/></svg>
+            <span>Essenciais</span><span style="margin-left:auto" id="chkPrincipal"></span>
+          </button>
+          <button class="mit" data-modo="tudo">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+            <span>Todas</span><span style="margin-left:auto" id="chkTudo"></span>
+          </button>
+          <hr>
+          <div class="tt">Seções visíveis</div>
+          <div class="chaves" id="chaves"></div>
+          <div style="font-size:11.5px;color:var(--t3);padding:0 10px 8px;line-height:1.5">
+            Desligar só esconde da tela. A coleta continua rodando e o dado continua sendo guardado.
+          </div>
+          <hr>
+          <button class="mit" id="mitBaixar">
+            <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4 20h16"/></svg>
+            Baixar a tabela (CSV)
+          </button>
+          <button class="mit" id="mitTema">
+            <svg viewBox="0 0 24 24"><path d="M12 3v1.5M12 19.5V21M4.2 4.2l1.1 1.1M18.7 18.7l1.1 1.1M3 12h1.5M19.5 12H21M4.2 19.8l1.1-1.1M18.7 5.3l1.1-1.1"/><circle cx="12" cy="12" r="4"/></svg>
+            Trocar o tema
+          </button>
+          <button class="mit" id="mitCofre">
+            <svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.3 7.5 9.5 4.4-1.2 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>
+            App e cofre
+          </button>
+          <button class="mit" id="mitAjuda">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.3a2.9 2.9 0 1 1 3.6 2.8c-.5.2-.8.7-.8 1.2v.6"/><path d="M12 17h.01"/></svg>
+            Como ler este painel
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="tela" id="tela"></main>
+  </div>
+</div>
+
+<dialog id="modalVideo"><div class="folha" id="folhaVideo"></div></dialog>
+<dialog id="modalVendas"><div class="folha" id="folhaVendas"></div></dialog>
+<dialog id="modalAjuda"><div class="folha" id="folhaAjuda"></div></dialog>
+<script>
+/* O callback da API do YouTube PRECISA existir antes do script dela carregar. Se for
+   definido depois, a API avisa que ficou pronta e ninguém ouve — era isso que deixava o
+   player preto. */
+window.apiPronta = false;
+window.onYouTubeIframeAPIReady = function(){ window.apiPronta = true; };
+(function(){
+  var s = document.createElement("script");
+  s.src = "https://www.youtube.com/iframe_api";
+  s.onerror = function(){ window.apiPronta = false; };
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════════════════════
+   Painel de Bolso — a casca do app. Só código: nenhum dado do Jhonatas fica neste arquivo.
+
+   Como os dados chegam (não passam por servidor nenhum):
+   • O Mac roda a coleta (YouTube, Meta Ads, concorrência…) de 6 em 6 horas e, no fim,
+     _motor/enviar_para_app.py TRANCA os arquivos dados/*.js com a chave PÚBLICA do app e sobe
+     pro repositório PRIVADO do GitHub dele (dados/diario.json e dados/rotina.json).
+   • O app baixa esses dois arquivos, abre com a chave PRIVADA (que fica guardada no aparelho e,
+     no repositório, criptografada com a SENHA DO COFRE) e roda o painel igual ao do Mac.
+   • As vendas continuam AO VIVO: o painel busca direto no recebedor (Apps Script), sem o Mac.
+
+   No repositório privado (cofre):
+     cofre.json      sal + prova da senha (PBKDF2-SHA256 600 mil) — outro aparelho confere a senha
+     inbox-key.json  chave pública RSA-OAEP-3072 (tranca) + privada criptografada com a senha (abre)
+     dados/*.json    envelopes {ek, iv, data, gz}: AES-256-GCM, chave trancada com RSA-OAEP-256
+   ═══════════════════════════════════════════════════════════════════════════════════════════ */
+(() => {
+  'use strict';
+  const APP_ID = 'painel-de-bolso';
+  const APP_VERSION = '1.0';
+  const PASSOS = [{"f": "dados/youtube/dados.js", "flag": "semDadosArquivo"}, {"f": "dados/youtube/link-venda.js", "flag": "semLinkVenda"}, {"f": "dados/youtube/tracking.js", "flag": "semTracking"}, {"f": "dados/youtube/titulos.js", "flag": "semTitulos"}, {"trecho": "/* TÍTULO SEMPRE O ATUAL. A equipe sobe o vídeo com título provisório e o SEO troca depois;\n   e o dados.js pode ser mais velho que o vídeo. titulos.js vem da rotina automática e passa\n   por cima: renomeado aparece com o nome novo, e vídeo que ainda não entrou na coleta ganha\n   ficha mínima (só título/data/capa, sem métricas). */\n(function(){\n  if (typeof DADOS === \"undefined\" || !DADOS || typeof TITULOS === \"undefined\" || !TITULOS) return;\n  DADOS.videos = DADOS.videos || {};\n  Object.entries(TITULOS.videos || {}).forEach(([id, t]) => {\n    if (!t || !t.titulo) return;\n    const v = DADOS.videos[id];\n    if (v){ v.titulo = t.titulo; if (!v.thumb && t.thumb) v.thumb = t.thumb; return; }\n    DADOS.videos[id] = {titulo: t.titulo, publicado: t.publicado || null, dur_s: 0, curto: false,\n      thumb: t.thumb || `https://i.ytimg.com/vi/${id}/mqdefault.jpg`,\n      vitalicio: {views: 0, likes: 0, comentarios: 0}, so_titulo: true};\n  });\n})();"}, {"f": "dados/vendas/vendas.js", "flag": "semVendas"}, {"f": "dados/vendas/config.js", "flag": "semAoVivo"}, {"f": "dados/vendas/canais.js", "flag": "semCanais"}, {"f": "dados/meta/meta.js", "flag": "semMeta"}, {"f": "dados/vendas/historico.js", "flag": "semHistorico"}, {"f": "dados/temas.js", "flag": "semTemas"}, {"f": "dados/marcos.js", "flag": "semMarcos"}, {"f": "dados/youtube/studio.js", "flag": "semStudio"}, {"f": "dados/youtube/cta.js", "flag": "semCta"}, {"f": "dados/concorrencia.js", "flag": "semConc"}, {"f": "dados/fora-do-nicho.js", "flag": "semForaNicho"}];          // ordem dos <script> do painel.html (dados do cofre + trechos de código)
+  const REPO_PADRAO = 'Jhonatas124/painel-dados';
+  const KDF_ITER = 600000;
+  const RSA = { name: 'RSA-OAEP', hash: 'SHA-256' };
+  const TE = new TextEncoder(), TD = new TextDecoder();
+
+  /* ---------- utilidades ---------- */
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function b64(buf) { const u = buf instanceof Uint8Array ? buf : new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }
+  function unb64(s) { const bin = atob(s); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+  const b64url = u => b64(u).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const pad = n => String(n).padStart(2, '0');
+  const fmtData = iso => { const d = new Date(iso); return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`; };
+  const fmtHora = iso => { const d = new Date(iso); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  function quando(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso), agora = new Date(), min = Math.round((agora - d) / 60000);
+    if (min < 1) return 'agora';
+    if (min < 60) return `há ${min} min`;
+    const dia = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+    const dd = Math.round((dia(agora) - dia(d)) / 86400000);
+    if (dd === 0) return `hoje às ${fmtHora(iso)}`;
+    if (dd === 1) return `ontem às ${fmtHora(iso)}`;
+    return `${fmtData(iso)} às ${fmtHora(iso)}`;
+  }
+  const aparelho = () => { const u = navigator.userAgent; return /iPhone/.test(u) ? 'iPhone' : /iPad/.test(u) ? 'iPad' : /Android/.test(u) ? 'Android' : /Macintosh/.test(u) ? 'Mac' : /Windows/.test(u) ? 'PC' : 'navegador'; };
+  async function deriveKey(pass, salt, iter) {
+    const base = await crypto.subtle.importKey('raw', TE.encode(pass), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  }
+  async function pinHash(pin, salt) { const base = await crypto.subtle.importKey('raw', TE.encode(pin), 'PBKDF2', false, ['deriveBits']); return b64(await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: 200000, hash: 'SHA-256' }, base, 256)); }
+  async function encBytes(key, bytes) { const iv = crypto.getRandomValues(new Uint8Array(12)); const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, bytes)); const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12); return out; }
+  async function decBytes(key, data) { const u = data instanceof Uint8Array ? data : new Uint8Array(data); return new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: u.slice(0, 12) }, key, u.slice(12))); }
+  async function gunzip(u8) {
+    if (typeof DecompressionStream === 'undefined') throw Object.assign(new Error('Este navegador é antigo demais (falta DecompressionStream). Atualize o iOS.'), { code: 'velho' });
+    const s = new Blob([u8]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return new Uint8Array(await new Response(s).arrayBuffer());
+  }
+  let toastT = null;
+  function toast(msg, ms = 2800) {
+    let t = $('#cf-toast'); if (!t) { t = document.createElement('div'); t.id = 'cf-toast'; document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), ms);
+  }
+
+  /* ---------- guardado no aparelho (IndexedDB) ---------- */
+  const Store = {
+    db: null,
+    open() {
+      if (this.db) return Promise.resolve(this.db);
+      return new Promise((res, rej) => {
+        if (!('indexedDB' in window)) return rej(new Error('sem indexedDB'));
+        const r = indexedDB.open(APP_ID, 1);
+        r.onupgradeneeded = () => { const db = r.result; if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv'); };
+        r.onsuccess = () => { this.db = r.result; res(this.db); };
+        r.onerror = () => rej(r.error);
+      });
+    },
+    async run(mode, fn) {
+      const db = await this.open();
+      return new Promise((res, rej) => { const t = db.transaction('kv', mode); const req = fn(t.objectStore('kv')); let out; if (req) req.onsuccess = () => { out = req.result; }; t.oncomplete = () => res(out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); });
+    },
+    get(k) { return this.run('readonly', o => o.get(k)); },
+    put(k, v) { return this.run('readwrite', o => o.put(v, k)); },
+    del(k) { return this.run('readwrite', o => o.delete(k)); }
+  };
+
+  /* ---------- GitHub (API de conteúdo do repositório privado) ---------- */
+  const GH = {
+    cfg: null,
+    async req(path, opts = {}) {
+      const headers = { Authorization: 'Bearer ' + this.cfg.token, Accept: opts.accept || 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+      if (opts.body) headers['Content-Type'] = 'application/json';
+      const r = await fetch('https://api.github.com' + path, { method: opts.method || 'GET', headers, body: opts.body, cache: 'no-store' });
+      if (r.status === 401) throw Object.assign(new Error('auth'), { code: 'auth' });
+      if (r.status === 403 && r.headers.get('x-ratelimit-remaining') !== '0') throw Object.assign(new Error('auth'), { code: 'auth' });
+      return r;
+    },
+    base() { return '/repos/' + this.cfg.repo; },
+    async repoInfo() { const r = await this.req(this.base()); if (r.status === 404) throw Object.assign(new Error('notfound'), { code: 'notfound' }); if (!r.ok) throw new Error('repo ' + r.status); return r.json(); },
+    async list(dir) { const r = await this.req(`${this.base()}/contents/${dir}`); if (r.status === 404) return []; if (!r.ok) throw new Error('list ' + r.status); const j = await r.json(); return Array.isArray(j) ? j : []; },
+    async raw(path) { const r = await this.req(`${this.base()}/contents/${path}`, { accept: 'application/vnd.github.raw+json' }); if (r.status === 404) return null; if (!r.ok) throw new Error('get ' + r.status); return new Uint8Array(await r.arrayBuffer()); },
+    async put(path, bytes, sha, message) {
+      const body = { message, content: b64(bytes) }; if (sha) body.sha = sha;
+      const r = await this.req(`${this.base()}/contents/${path}`, { method: 'PUT', body: JSON.stringify(body) });
+      if (r.status === 409 || r.status === 422) throw Object.assign(new Error('conflict'), { code: 'conflict' });
+      if (!r.ok) throw new Error('put ' + r.status);
+      return (await r.json()).content.sha;
+    }
+  };
+
+  /* ---------- estado ---------- */
+  const St = {
+    cfg: null,      // {repo, token, salt, iter, check, key, priv, lastSync, error, conectadoEm, pubSha}
+    bundle: null,   // {arquivos:{caminho: texto}, shas:{diario, rotina}, gerado:{…}, recebidoEm}
+    lock: { mode: 'none', graceMin: 30 },
+    bioOk: false, painelNoAr: false, novo: false, upd: null, puxando: null, escondidoEm: 0, trancado: false
+  };
+  async function salvarCfg() {
+    const c = { ...St.cfg };
+    try { await Store.put('cofre', c); }
+    catch (_) { delete c.key; delete c.priv; c.pedeSenha = true; St.cfg.pedeSenha = true; try { await Store.put('cofre', c); } catch (_) {} }
+  }
+
+  /* ---------- abrir os dados que o Mac mandou ---------- */
+  async function abrirEnvelope(env) {
+    const raw = await crypto.subtle.decrypt(RSA, St.cfg.priv, unb64(env.ek));
+    const k = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
+    let bytes = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.iv) }, k, unb64(env.data)));
+    if (env.gz) bytes = await gunzip(bytes);
+    return JSON.parse(TD.decode(bytes));
+  }
+  async function puxar() {
+    if (St.puxando) return St.puxando;
+    St.puxando = (async () => {
+      if (!St.cfg || !St.cfg.priv) return false;
+      if (!navigator.onLine) return false;
+      GH.cfg = St.cfg;
+      let mudou = false;
+      try {
+        const itens = (await GH.list('dados')).filter(x => x.type === 'file' && /\.json$/i.test(x.name));
+        const b = St.bundle ? { ...St.bundle, arquivos: { ...St.bundle.arquivos }, shas: { ...St.bundle.shas }, gerado: { ...St.bundle.gerado } } : { arquivos: {}, shas: {}, gerado: {} };
+        for (const it of itens) {
+          const nome = it.name.replace(/\.json$/i, '');
+          if (b.shas[nome] === it.sha) continue;
+          const env = JSON.parse(TD.decode(await GH.raw(it.path)));
+          const pack = await abrirEnvelope(env);
+          if (pack.app !== APP_ID || pack.kind !== 'dados') continue;
+          Object.assign(b.arquivos, pack.arquivos || {});
+          (pack.removidos || []).forEach(f => { delete b.arquivos[f]; });
+          b.shas[nome] = it.sha; b.gerado[nome] = pack.gerado || env.created || null; mudou = true;
+        }
+        if (mudou) { b.recebidoEm = new Date().toISOString(); St.bundle = b; await Store.put('bundle', b); }
+        St.cfg.lastSync = new Date().toISOString(); St.cfg.error = null;
+      } catch (e) {
+        if (e.code === 'auth') St.cfg.error = 'A chave do GitHub não funciona mais (venceu ou foi apagada). Troque em App e cofre › Trocar chave.';
+        else if (e.name === 'OperationError') St.cfg.error = 'Os dados do Mac foram trancados com outra chave. No Mac, rode de novo “15 - Ligar o app do iPhone.command”.';
+        else if (e.code === 'velho') St.cfg.error = e.message;
+        else St.cfg.error = null;
+        console.warn('puxar', e);
+      } finally { try { await salvarCfg(); } catch (_) {} }
+      return mudou;
+    })();
+    try { return await St.puxando; } finally { St.puxando = null; }
+  }
+
+  /* ---------- rodar o painel com os dados ---------- */
+  function rodarTrecho(code, nome) {
+    const s = document.createElement('script');
+    s.textContent = code + '\n//# sourceURL=' + nome;
+    document.body.appendChild(s);
+  }
+  function subirPainel() {
+    if (St.painelNoAr) return;
+    St.painelNoAr = true;
+    fecharGate();
+    const arq = (St.bundle && St.bundle.arquivos) || {};
+    PASSOS.forEach((p, i) => {
+      if (p.trecho != null) { rodarTrecho(p.trecho, 'trecho-' + i + '.js'); return; }
+      if (arq[p.f] != null) rodarTrecho(arq[p.f], p.f);
+      else if (p.flag) window[p.flag] = true;
+    });
+    const s = document.createElement('script');
+    s.src = 'painel.js?v=' + APP_VERSION;
+    s.onload = () => { ligarMenu(); pintarPilulas(); };
+    s.onerror = () => { const el = document.getElementById('tela'); if (el) el.innerHTML = '<div class="cart"><div class="vaz"><b>Não consegui carregar o painel.</b> Confira a internet e abra de novo.</div></div>'; };
+    document.body.appendChild(s);
+  }
+  function ligarMenu() {
+    const b = document.getElementById('mitCofre');
+    if (b) b.onclick = () => { try { window.fecharMenu && window.fecharMenu(); } catch (_) {} abrirFolha(); };
+  }
+  function recarregar() { location.reload(); }
+
+  /* ---------- telas de entrada (antes do painel) ---------- */
+  const ICO_LOGO = '<svg viewBox="0 0 24 24"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>';
+  function gate(html) {
+    let g = $('#cf-gate'); if (!g) { g = document.createElement('div'); g.id = 'cf-gate'; document.body.appendChild(g); }
+    g.innerHTML = `<div class="cf-box">${html}</div>`; document.body.classList.add('cf-gate-on'); g.scrollTop = 0;
+    return g;
+  }
+  function fecharGate() { const g = $('#cf-gate'); if (g) g.remove(); document.body.classList.remove('cf-gate-on'); }
+  function telaCarregando(msg) { gate(`<div class="cf-logo">${ICO_LOGO}</div><div class="cf-spin"></div><p class="cf-p cf-c">${esc(msg || 'Abrindo…')}</p>`); }
+
+  function telaBoasVindas() {
+    const g = gate(`<div class="cf-logo">${ICO_LOGO}</div><h1>Painel de Bolso</h1>
+      <p class="cf-p cf-c">O painel de vendas e do canal no seu iPhone. Os dados chegam do Mac <b>trancados</b> num repositório <b>privado</b> do seu GitHub — só abre neste app, com a senha do cofre.</p>
+      <button class="cf-bt pri blk" id="cf-ir">Ligar o cofre</button>
+      <p class="cf-small cf-c">Versão ${APP_VERSION}</p>`);
+    g.querySelector('#cf-ir').onclick = () => telaLigar1();
+  }
+
+  const LG = { repo: '', token: '', existe: false, cofre: null };
+  function telaLigar1(err) {
+    const g = gate(`<div class="cf-logo">${ICO_LOGO}</div><h2 class="cf-c">Ligar o cofre</h2>
+      <form class="cf-card" id="cf-f1" autocomplete="off">
+        <label class="cf-field"><span>Repositório privado (usuário/nome)</span>
+          <input id="cf-repo" class="cf-in" value="${esc(LG.repo || (St.cfg && St.cfg.repo) || REPO_PADRAO)}" autocapitalize="off" autocorrect="off" spellcheck="false"></label>
+        <label class="cf-field"><span>Chave de acesso do GitHub</span>
+          <input id="cf-token" class="cf-in" type="password" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+        <details class="cf-det"><summary>Como criar a chave (1 vez)</summary><ol class="cf-list">
+          <li>github.com › sua foto › Settings › Developer settings › Personal access tokens › <b>Fine-grained tokens</b> › Generate new token.</li>
+          <li>Expiration: 1 ano. Repository access: <b>Only select repositories</b> › só o <b>painel-dados</b>.</li>
+          <li>Permissions › Repository › <b>Contents: Read and write</b>.</li>
+          <li>Generate token, copie e cole aqui. Guarde: a mesma chave vai no Mac (botão 15).</li></ol></details>
+        ${err ? `<p class="cf-err">${esc(err)}</p>` : ''}
+        <button class="cf-bt pri blk" id="cf-go1">Continuar</button>
+      </form>
+      ${St.cfg ? '<button class="cf-bt fant" id="cf-volta">Cancelar</button>' : '<button class="cf-bt fant" id="cf-volta">Voltar</button>'}`);
+    g.querySelector('#cf-volta').onclick = () => St.cfg ? iniciarApp() : telaBoasVindas();
+    g.querySelector('#cf-f1').onsubmit = async ev => {
+      ev.preventDefault();
+      LG.repo = g.querySelector('#cf-repo').value.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\.git$/, '').replace(/\/$/, '');
+      LG.token = g.querySelector('#cf-token').value.trim();
+      if (!/^[\w.-]+\/[\w.-]+$/.test(LG.repo)) return telaLigar1('Escreva no formato usuario/repositorio.');
+      if (LG.token.length < 20) return telaLigar1('Cole a chave de acesso do GitHub.');
+      const bt = g.querySelector('#cf-go1'); bt.disabled = true; bt.textContent = 'Testando o acesso…';
+      try {
+        GH.cfg = { repo: LG.repo, token: LG.token };
+        const info = await GH.repoInfo();
+        if (!info.private) return telaLigar1('Esse repositório é PÚBLICO. Por segurança o cofre só funciona em repositório privado.');
+        const raiz = await GH.list('');
+        LG.existe = raiz.some(x => x.name === 'cofre.json');
+        LG.cofre = LG.existe ? JSON.parse(TD.decode(await GH.raw('cofre.json'))) : null;
+        telaLigar2();
+      } catch (e) {
+        telaLigar1(e.code === 'auth' ? 'A chave não foi aceita. Confira se copiou inteira e se ela tem acesso a esse repositório.' : e.code === 'notfound' ? 'Não achei esse repositório com essa chave.' : 'Não consegui falar com o GitHub. Confira a internet e tente de novo.');
+      }
+    };
+  }
+  function telaLigar2(err) {
+    const ex = LG.existe;
+    const g = gate(`<div class="cf-logo">${ICO_LOGO}</div><h2 class="cf-c">${ex ? 'Senha do cofre' : 'Crie a senha do cofre'}</h2>
+      <form class="cf-card" id="cf-f2" autocomplete="off">
+        ${ex ? `<p class="cf-p">Achei o cofre do painel${LG.cofre && LG.cofre.created ? ` (criado em ${fmtData(LG.cofre.created)}${LG.cofre.device ? ', no ' + esc(LG.cofre.device) : ''})` : ''}. Digite a senha dele.</p>
+          <label class="cf-field"><span>Senha do cofre</span><input id="cf-s1" class="cf-in" type="password" autocomplete="current-password"></label>`
+        : `<p class="cf-p">É ela que tranca a chave dos seus dados. <b>Se esquecer, ninguém recupera</b>: guarde no app Senhas.</p>
+          <label class="cf-field"><span>Senha do cofre (mínimo 8)</span><input id="cf-s1" class="cf-in" type="password" autocomplete="new-password"></label>
+          <label class="cf-field"><span>Repita a senha</span><input id="cf-s2" class="cf-in" type="password" autocomplete="new-password"></label>`}
+        ${err ? `<p class="cf-err">${esc(err)}</p>` : ''}
+        <button class="cf-bt pri blk" id="cf-go2">${ex ? 'Conectar' : 'Criar cofre'}</button>
+      </form><button class="cf-bt fant" id="cf-volta">Voltar</button>`);
+    g.querySelector('#cf-volta').onclick = () => telaLigar1();
+    setTimeout(() => { const i = g.querySelector('#cf-s1'); i && i.focus(); }, 60);
+    g.querySelector('#cf-f2').onsubmit = async ev => {
+      ev.preventDefault();
+      const s1 = g.querySelector('#cf-s1').value, s2 = ex ? s1 : g.querySelector('#cf-s2').value;
+      if (s1.length < 8) return telaLigar2('A senha precisa de pelo menos 8 caracteres.');
+      if (s1 !== s2) return telaLigar2('As duas senhas não batem.');
+      const bt = g.querySelector('#cf-go2'); bt.disabled = true; bt.textContent = 'Trabalhando… (leva alguns segundos)';
+      try { await (ex ? conectarCofre(s1) : criarCofre(s1)); }
+      catch (e) {
+        if (e.code === 'senha') return telaLigar2('Senha errada pra esse cofre.');
+        if (e.code === 'conflict') { LG.existe = true; LG.cofre = JSON.parse(TD.decode(await GH.raw('cofre.json'))); return telaLigar2('Outro aparelho acabou de criar o cofre. Digite a senha dele.'); }
+        return telaLigar2('Deu erro: ' + (e.message || e));
+      }
+      St.lock = { mode: 'none', graceMin: 30 }; await salvarLock();
+      telaCarregando('Cofre ligado. Procurando os dados do Mac…');
+      await puxar();
+      iniciarApp();
+    };
+  }
+  async function criarCofre(senha) {
+    GH.cfg = { repo: LG.repo, token: LG.token };
+    const salt = crypto.getRandomValues(new Uint8Array(16)), key = await deriveKey(senha, salt, KDF_ITER);
+    const check = b64(await encBytes(key, TE.encode('painel-ok')));
+    const agora = new Date().toISOString();
+    const cofre = { app: APP_ID, kind: 'cofre', v: 1, kdf: { name: 'PBKDF2-SHA256', iter: KDF_ITER, salt: b64(salt) }, check, created: agora, device: aparelho(),
+      note: 'Cofre do Painel de Bolso. Sal e prova da senha — sem a senha isto não abre nada.' };
+    await GH.put('cofre.json', TE.encode(JSON.stringify(cofre, null, 1)), null, 'Cofre do Painel de Bolso');
+    const kp = await crypto.subtle.generateKey({ ...RSA, modulusLength: 3072, publicExponent: new Uint8Array([1, 0, 1]) }, true, ['encrypt', 'decrypt']);
+    const pub = await crypto.subtle.exportKey('jwk', kp.publicKey), privJwk = await crypto.subtle.exportKey('jwk', kp.privateKey);
+    const chave = { app: APP_ID, kind: 'inbox-key', v: 1, alg: 'RSA-OAEP-256 + A256GCM', created: agora, device: aparelho(),
+      note: 'Chave PÚBLICA do Painel de Bolso: o Mac usa pra trancar os dados. Abrir, só o app (a privada abaixo está criptografada com a senha do cofre).',
+      pub: { kty: pub.kty, n: pub.n, e: pub.e, alg: pub.alg }, privEnc: b64(await encBytes(key, TE.encode(JSON.stringify(privJwk)))) };
+    const pubSha = await GH.put('inbox-key.json', TE.encode(JSON.stringify(chave, null, 1)), null, 'Chave pública do Painel de Bolso');
+    try { await GH.put('dados/LEIA.md', TE.encode('# Dados do Painel de Bolso\n\n`diario.json` e `rotina.json` chegam do Mac (rotina de 6 em 6 horas, `_motor/enviar_para_app.py`), trancados com a chave pública (`inbox-key.json`). Só o app abre.\n'), null, 'Pasta dos dados'); } catch (_) {}
+    const priv = await crypto.subtle.importKey('jwk', privJwk, RSA, false, ['decrypt']);
+    St.cfg = { repo: LG.repo, token: LG.token, salt: b64(salt), iter: KDF_ITER, check, key, priv, pubSha, lastSync: null, error: null, conectadoEm: agora };
+    St.bundle = null; await Store.del('bundle');
+    await salvarCfg(); GH.cfg = St.cfg;
+  }
+  async function conectarCofre(senha) {
+    GH.cfg = { repo: LG.repo, token: LG.token };
+    const c = LG.cofre, salt = unb64(c.kdf.salt), iter = c.kdf.iter;
+    const key = await deriveKey(senha, salt, iter);
+    try { await decBytes(key, unb64(c.check)); } catch (_) { throw Object.assign(new Error('senha'), { code: 'senha' }); }
+    const kf = JSON.parse(TD.decode(await GH.raw('inbox-key.json')));
+    const privJwk = JSON.parse(TD.decode(await decBytes(key, unb64(kf.privEnc))));
+    const priv = await crypto.subtle.importKey('jwk', privJwk, RSA, false, ['decrypt']);
+    const mesmoRepo = St.cfg && St.cfg.repo === LG.repo;
+    St.cfg = { repo: LG.repo, token: LG.token, salt: c.kdf.salt, iter, check: c.check, key, priv, lastSync: null, error: null, conectadoEm: new Date().toISOString() };
+    if (!mesmoRepo) { St.bundle = null; await Store.del('bundle'); }
+    await salvarCfg(); GH.cfg = St.cfg;
+  }
+
+  function telaEsperando() {
+    const erro = St.cfg && St.cfg.error;
+    const g = gate(`<div class="cf-logo">${ICO_LOGO}</div><h2 class="cf-c">Cofre ligado <span class="cf-ok">✓</span></h2>
+      <div class="cf-card">
+        <p class="cf-p"><b>Falta o Mac mandar os dados.</b> Faça isto uma vez no Mac:</p>
+        <ol class="cf-list"><li>Abra a pasta <b>CASOSePROJETOS › trabalho › painel-metricas</b>.</li>
+          <li>Dois cliques em <b>“15 - Ligar o app do iPhone.command”</b>.</li>
+          <li>Cole a <b>mesma chave do GitHub</b> que você pôs aqui e aperte Enter.</li></ol>
+        <p class="cf-p">Os dados aparecem aqui sozinhos em seguida. Depois disso, a rotina do Mac manda de 6 em 6 horas.</p>
+        ${erro ? `<p class="cf-err">${esc(erro)}</p>` : ''}
+        <button class="cf-bt pri blk" id="cf-proc">Procurar agora</button>
+        <p class="cf-small" id="cf-est">Última procura: ${esc(quando(St.cfg && St.cfg.lastSync))}</p>
+      </div>
+      <button class="cf-bt fant" id="cf-aj">Ajustes do cofre</button>`);
+    g.querySelector('#cf-proc').onclick = async () => { const bt = g.querySelector('#cf-proc'); bt.disabled = true; bt.textContent = 'Procurando…'; await puxar(); iniciarApp(); };
+    g.querySelector('#cf-aj').onclick = () => abrirFolha();
+    clearTimeout(St.esperaT); St.esperaT = setTimeout(async function tick() { if (St.painelNoAr || !$('#cf-proc')) return; if (!document.hidden) { await puxar(); if (St.bundle) return iniciarApp(); const e = $('#cf-est'); if (e) e.textContent = 'Última procura: ' + quando(St.cfg && St.cfg.lastSync); } St.esperaT = setTimeout(tick, 30000); }, 30000);
+  }
+
+  /* ---------- trava do app (só este aparelho; padrão: nenhuma) ---------- */
+  async function salvarLock() { try { await Store.put('lock', { ...St.lock }); } catch (_) {} }
+  const lockAtiva = () => !!St.cfg && St.lock.mode !== 'none';
+  const lockVencida = () => Date.now() - (St.lock.lastActive || 0) > Math.max((St.lock.graceMin || 0) * 60000, 15000);
+  function tocarLock() { St.lock.lastActive = Date.now(); salvarLock(); }
+  const Bio = {
+    async available() { try { return !!(window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); } catch (_) { return false; } },
+    label() { return /iPhone|iPad/.test(navigator.userAgent) ? 'Face ID' : /Macintosh/.test(navigator.userAgent) ? 'Touch ID' : 'digital/rosto'; },
+    async register() {
+      const cred = await navigator.credentials.create({ publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)), rp: { name: 'Painel de Bolso', id: location.hostname },
+        user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'painel', displayName: 'Painel de Bolso' },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' }, timeout: 60000, attestation: 'none' } });
+      return b64(new Uint8Array(cred.rawId));
+    },
+    async verify(credId) {
+      const ch = crypto.getRandomValues(new Uint8Array(32));
+      const a = await navigator.credentials.get({ publicKey: { challenge: ch, rpId: location.hostname, allowCredentials: [{ type: 'public-key', id: unb64(credId) }], userVerification: 'required', timeout: 60000 } });
+      if (!a || b64(new Uint8Array(a.rawId)) !== credId) return false;
+      const cd = JSON.parse(TD.decode(a.response.clientDataJSON));
+      if (cd.type !== 'webauthn.get' || cd.challenge !== b64url(ch)) return false;
+      return !!(new Uint8Array(a.response.authenticatorData)[32] & 0x04);
+    }
+  };
+  function trancar(depois, modo) {
+    St.trancado = true;
+    const m = modo || (St.cfg.pedeSenha ? 'senha' : St.lock.mode), isPin = m === 'pin', isBio = m === 'bio';
+    const g = gate(`<div class="cf-logo">${ICO_LOGO}</div><h1>Painel</h1>
+      <form class="cf-card" id="cf-lf" autocomplete="off">
+        ${isBio ? `<button type="button" class="cf-bt pri blk" id="cf-bio">Entrar com ${esc(Bio.label())}</button>`
+        : `<p class="cf-p cf-c">${isPin ? 'Digite seu PIN' : 'Digite a senha do cofre'}</p>
+          <input id="cf-li" class="cf-in ${isPin ? 'cf-pin' : ''}" type="password" ${isPin ? 'inputmode="numeric" maxlength="6" autocomplete="off"' : 'autocomplete="current-password"'} aria-label="${isPin ? 'PIN' : 'Senha do cofre'}">
+          <button class="cf-bt pri blk">Entrar</button>`}
+        <p class="cf-err" id="cf-le" hidden></p>
+        ${isPin || isBio ? '<button type="button" class="cf-bt fant" id="cf-esq">Usar a senha do cofre</button>' : ''}
+      </form>`);
+    const er = msg => { const e = g.querySelector('#cf-le'); e.textContent = msg; e.hidden = false; };
+    const liberar = () => { St.trancado = false; tocarLock(); if (St.painelNoAr) fecharGate(); depois && depois(); };
+    let falhas = 0, travaAte = 0;
+    const esq = g.querySelector('#cf-esq'); if (esq) esq.onclick = () => trancar(depois, 'senha');
+    if (isBio) {
+      const tenta = async auto => { try { if (await Bio.verify(St.lock.credId)) return liberar(); er('Não reconheci. Tente de novo.'); } catch (_) { if (!auto) er(`${Bio.label()} cancelado. Toque pra tentar de novo ou use a senha do cofre.`); } };
+      g.querySelector('#cf-bio').onclick = () => tenta(false); setTimeout(() => tenta(true), 350);
+    } else setTimeout(() => { const i = g.querySelector('#cf-li'); i && i.focus(); }, 60);
+    g.querySelector('#cf-lf').onsubmit = async ev => {
+      ev.preventDefault(); if (isBio) return;
+      const inp = g.querySelector('#cf-li'), v = inp.value;
+      if (travaAte > Date.now()) return er(`Muitas tentativas. Espere ${Math.ceil((travaAte - Date.now()) / 1000)} s.`);
+      if (isPin) {
+        if (St.lock.pinHash && (await pinHash(v, unb64(St.lock.pinSalt))) === St.lock.pinHash) return liberar();
+        if (++falhas >= 5) { falhas = 0; travaAte = Date.now() + 30000; }
+        inp.value = ''; inp.focus(); return er('PIN errado.');
+      }
+      try {
+        const key = await deriveKey(v, unb64(St.cfg.salt), St.cfg.iter); await decBytes(key, unb64(St.cfg.check));
+        if (St.cfg.pedeSenha || !St.cfg.priv) {
+          GH.cfg = St.cfg; const kf = JSON.parse(TD.decode(await GH.raw('inbox-key.json')));
+          St.cfg.priv = await crypto.subtle.importKey('jwk', JSON.parse(TD.decode(await decBytes(key, unb64(kf.privEnc)))), RSA, false, ['decrypt']);
+          St.cfg.key = key; delete St.cfg.pedeSenha; await salvarCfg();
+        }
+        if (m === 'senha' && St.lock.mode === 'pin' && modo === 'senha') {
+          const pin = await pedirSegredo('Novo PIN', '4 a 6 números, só pra este aparelho.', { pin: true, confirma: true, ok: 'Salvar PIN' });
+          if (pin) { const s = crypto.getRandomValues(new Uint8Array(16)); St.lock.pinSalt = b64(s); St.lock.pinHash = await pinHash(pin, s); await salvarLock(); }
+        }
+        liberar();
+      } catch (_) { inp.value = ''; inp.focus(); er(navigator.onLine ? 'Senha errada.' : 'Senha errada (ou sem internet pra buscar a chave).'); }
+    };
+  }
+  function pedirSegredo(titulo, msg, { pin = false, confirma = false, ok = 'Confirmar' } = {}) {
+    return new Promise(res => {
+      const d = document.createElement('div'); d.id = 'cf-dlg';
+      const inp = id => `<input id="${id}" class="cf-in ${pin ? 'cf-pin' : ''}" type="password" ${pin ? 'inputmode="numeric" maxlength="6" autocomplete="off"' : 'autocomplete="new-password"'} aria-label="${esc(titulo)}">`;
+      d.innerHTML = `<div class="cf-scrim"></div><form autocomplete="off"><b>${esc(titulo)}</b>${msg ? `<p class="cf-small" style="margin:0">${esc(msg)}</p>` : ''}${inp('cf-d1')}${confirma ? `<span class="cf-small">Repita</span>${inp('cf-d2')}` : ''}<p class="cf-err" hidden></p><div class="cf-row"><button type="button" class="cf-bt" data-n>Cancelar</button><button class="cf-bt pri">${esc(ok)}</button></div></form>`;
+      document.body.appendChild(d);
+      const fim = v => { d.remove(); res(v); };
+      d.querySelector('[data-n]').onclick = () => fim(null);
+      d.querySelector('form').onsubmit = e => {
+        e.preventDefault(); const a = d.querySelector('#cf-d1').value, b = confirma ? d.querySelector('#cf-d2').value : a, er = d.querySelector('.cf-err');
+        if (pin && !/^\d{4,6}$/.test(a)) { er.textContent = 'O PIN tem de 4 a 6 números.'; er.hidden = false; return; }
+        if (a !== b) { er.textContent = 'Não bateu com a repetição.'; er.hidden = false; return; }
+        fim(a);
+      };
+      setTimeout(() => { const i = d.querySelector('#cf-d1'); i && i.focus(); }, 30);
+    });
+  }
+  function confirmar(msg, ok) {
+    return new Promise(res => {
+      const d = document.createElement('div'); d.id = 'cf-dlg';
+      d.innerHTML = `<div class="cf-scrim"></div><form><p class="cf-p" style="color:var(--t1)">${esc(msg)}</p><div class="cf-row"><button type="button" class="cf-bt" data-n>Cancelar</button><button class="cf-bt pri">${esc(ok || 'Confirmar')}</button></div></form>`;
+      document.body.appendChild(d);
+      d.querySelector('[data-n]').onclick = () => { d.remove(); res(false); };
+      d.querySelector('form').onsubmit = e => { e.preventDefault(); d.remove(); res(true); };
+    });
+  }
+  async function mudarTrava(v) {
+    if (v === St.lock.mode && v !== 'pin') return;
+    if (v === 'pin') {
+      const pin = await pedirSegredo(St.lock.mode === 'pin' ? 'Novo PIN' : 'Criar PIN', '4 a 6 números, só pra este aparelho.', { pin: true, confirma: true, ok: 'Salvar PIN' });
+      if (!pin) return; const s = crypto.getRandomValues(new Uint8Array(16)); St.lock.pinSalt = b64(s); St.lock.pinHash = await pinHash(pin, s); St.lock.mode = 'pin';
+    } else if (v === 'bio') {
+      try { St.lock.credId = await Bio.register(); St.lock.mode = 'bio'; } catch (_) { return toast(`Não consegui ligar o ${Bio.label()} agora.`); }
+    } else St.lock.mode = 'none';
+    await salvarLock(); tocarLock(); abrirFolha();
+    toast(v === 'none' ? 'Trava desligada neste aparelho' : v === 'bio' ? `${Bio.label()} ligado` : 'PIN salvo');
+  }
+
+  /* ---------- folha "App e cofre" ---------- */
+  function abrirFolha() {
+    fecharFolha();
+    const c = St.cfg, b = St.bundle, L = St.lock, bl = Bio.label();
+    const yt = (() => { try { return (typeof DADOS !== 'undefined' && DADOS && DADOS.gerado_em) || null; } catch (_) { return null; } })();
+    const ger = b && b.gerado ? Object.values(b.gerado).filter(Boolean).sort().pop() : null;
+    const opt = (v, label, dis) => `<button type="button" data-lock="${v}" aria-pressed="${L.mode === v}" ${dis ? 'disabled' : ''}>${label}</button>`;
+    const f = document.createElement('div'); f.id = 'cf-folha';
+    f.innerHTML = `<div class="cf-scrim"></div><div class="cf-sheet" role="dialog" aria-label="App e cofre">
+      <div class="cf-sheet-top"><h2>App e cofre</h2><button class="cf-x" data-f="x" aria-label="Fechar">×</button></div>
+      ${St.upd ? `<button class="cf-bt pri blk" data-f="upd">Nova versão ${esc(St.upd.version)} — atualizar</button>` : ''}
+      ${St.novo ? `<button class="cf-bt pri blk" data-f="recarregar">Dados novos do Mac — mostrar</button>` : ''}
+      <div class="cf-card" style="gap:0">
+        <b style="margin-bottom:4px">Dados do Mac</b>
+        <div class="cf-kv"><span>Última remessa</span><span>${esc(quando(ger))}</span></div>
+        ${yt ? `<div class="cf-kv"><span>Coleta do YouTube</span><span>${esc(quando(yt))}</span></div>` : ''}
+        <div class="cf-kv"><span>Procurado</span><span data-f="est">${esc(quando(c && c.lastSync))}</span></div>
+        <div class="cf-kv"><span>Vendas</span><span>ao vivo (não precisa do Mac)</span></div>
+      </div>
+      <p class="cf-small" style="margin:-4px 2px 0">O Mac manda de 6 em 6 horas quando está ligado. Pra mandar agora: no Mac, <b>“0 - ATUALIZAR TUDO.command”</b>.</p>
+      ${c ? `<div class="cf-card">
+        <div style="display:flex;justify-content:space-between;align-items:center"><b>Cofre</b><span class="cf-chip ${c.error ? 'ruim' : ''}">${c.error ? 'Atenção' : 'Ligado'}</span></div>
+        ${c.error ? `<p class="cf-err">${esc(c.error)}</p>` : ''}
+        <p class="cf-small" style="margin:0">Repositório privado ${esc(c.repo)} · criptografado (AES-256)</p>
+        <button class="cf-bt pri blk" data-f="puxar">Procurar dados agora</button>
+        <button class="cf-bt blk" data-f="chave">Trocar chave do GitHub</button>
+      </div>
+      <div class="cf-card"><b>Trava do app <span class="cf-small">(só este aparelho)</span></b>
+        <div class="cf-seg">${opt('none', 'Nenhuma')}${opt('bio', bl, !St.bioOk)}${opt('pin', 'PIN')}</div>
+        ${L.mode !== 'none' ? `<label class="cf-kv" style="border:0;align-items:center"><span>Pedir de novo depois de</span><select class="cf-in" data-f="grace" style="width:150px;min-height:40px;padding:8px">${[[0, 'Toda vez'], [5, '5 min fora'], [30, '30 min fora'], [60, '1 hora fora']].map(([m, l]) => `<option value="${m}" ${L.graceMin === m ? 'selected' : ''}>${l}</option>`).join('')}</select></label>` : '<p class="cf-small" style="margin:0">O app abre direto (o iPhone já tem a senha dele).</p>'}
+      </div>` : ''}
+      <div class="cf-card" style="gap:0"><b style="margin-bottom:4px">App</b>
+        <div class="cf-kv"><span>Versão</span><span>${APP_VERSION}</span></div>
+        <div class="cf-kv"><span>Aparelho</span><span>${esc(aparelho())}</span></div>
+      </div>
+      <button class="cf-bt blk" data-f="versao">Procurar atualização do app</button>
+      ${c ? '<button class="cf-bt fant ruim" data-f="sair">Desconectar deste aparelho</button>' : ''}
+    </div>`;
+    document.body.appendChild(f);
+    const on = (k, fn) => { const el = f.querySelector(`[data-f="${k}"]`); if (el) el.onclick = fn; };
+    f.querySelector('.cf-scrim').onclick = fecharFolha; on('x', fecharFolha);
+    on('upd', aplicarAtualizacao); on('recarregar', recarregar);
+    on('puxar', async () => { const bt = f.querySelector('[data-f="puxar"]'); bt.disabled = true; bt.textContent = 'Procurando…'; const m = await puxar(); if (m) { St.novo = true; if (!St.painelNoAr) { fecharFolha(); return iniciarApp(); } } abrirFolha(); toast(St.cfg.error ? St.cfg.error : m ? 'Chegaram dados novos' : 'Nada novo do Mac'); });
+    on('chave', () => { fecharFolha(); LG.repo = St.cfg.repo; telaLigar1(); });
+    on('versao', () => procurarAtualizacao(true));
+    on('sair', async () => {
+      if (!await confirmar('Desconectar o cofre deste aparelho? Os dados somem daqui (continuam no GitHub e no Mac). Pra voltar, é só ligar de novo com a chave e a senha.', 'Desconectar')) return;
+      try { await Store.del('cofre'); await Store.del('bundle'); } catch (_) {}
+      St.lock = { mode: 'none', graceMin: 30 }; await salvarLock(); recarregar();
+    });
+    f.querySelectorAll('[data-lock]').forEach(bt => bt.onclick = () => mudarTrava(bt.dataset.lock));
+    const gr = f.querySelector('[data-f="grace"]'); if (gr) gr.onchange = async () => { St.lock.graceMin = +gr.value; await salvarLock(); toast('Salvo'); };
+  }
+  function fecharFolha() { const f = $('#cf-folha'); if (f) f.remove(); }
+
+  /* ---------- avisos (dados novos, versão nova) ---------- */
+  function pintarPilulas() {
+    document.querySelectorAll('.cf-pilula').forEach(x => x.remove());
+    if (!St.painelNoAr) return;
+    const add = (txt, fn) => { const b = document.createElement('button'); b.className = 'cf-pilula'; b.textContent = txt; b.onclick = fn; document.body.appendChild(b); };
+    if (St.upd) add(`Nova versão ${St.upd.version} do app — toque pra atualizar`, aplicarAtualizacao);
+    if (St.novo) add('Dados novos do Mac — toque pra ver', recarregar);
+  }
+  const verNum = v => String(v || '0').split('.').map(n => parseInt(n, 10) || 0);
+  function maisNova(a, b) { const x = verNum(a), y = verNum(b); for (let i = 0; i < Math.max(x.length, y.length); i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; }
+  St.updCheck = 0;
+  async function procurarAtualizacao(manual) {
+    if (!navigator.onLine) { if (manual) toast('Sem internet agora.'); return; }
+    St.updCheck = Date.now();
+    try {
+      const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw 0;
+      const j = await r.json();
+      if (maisNova(j.version, APP_VERSION)) { St.upd = j; pintarPilulas(); if (manual) { toast(`Versão ${j.version} disponível`); abrirFolha(); } }
+      else if (manual) toast(`Você já está na versão mais nova (${APP_VERSION})`);
+    } catch (_) { if (manual) toast('Não consegui verificar agora.'); }
+  }
+  async function aplicarAtualizacao() {
+    toast('Atualizando…', 6000);
+    try { if ('serviceWorker' in navigator) { const reg = await navigator.serviceWorker.getRegistration(); if (reg) { try { await reg.update(); } catch (_) {} if (reg.waiting) reg.waiting.postMessage('skip'); } } if (window.caches) { for (const k of await caches.keys()) await caches.delete(k); } } catch (_) {}
+    location.reload();
+  }
+
+  /* ---------- volta ao app / de tempos em tempos ---------- */
+  async function checarNovidades(voltou) {
+    if (!St.cfg || !St.cfg.priv || St.trancado) return;
+    const mudou = await puxar();
+    if (!mudou) return;
+    if (!St.painelNoAr) return iniciarApp();
+    const modalAberto = !!document.querySelector('dialog[open]') || !!$('#cf-folha');
+    if (voltou && !modalAberto) return recarregar();
+    St.novo = true; pintarPilulas();
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { St.escondidoEm = Date.now(); if (St.cfg && !St.trancado) tocarLock(); return; }
+    const fora = St.escondidoEm ? Date.now() - St.escondidoEm : 0;
+    if (St.painelNoAr && lockAtiva() && lockVencida()) return trancar(() => checarNovidades(true));
+    if (fora > 30000) checarNovidades(true);
+    if (Date.now() - St.updCheck > 30 * 60000) procurarAtualizacao(false);
+  });
+  setInterval(() => { if (!document.hidden) checarNovidades(false); }, 10 * 60000);
+  ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => { if (St.cfg && St.lock.mode !== 'none' && !St.trancado && Date.now() - (St.lock.lastActive || 0) > 60000) tocarLock(); }, { passive: true }));
+
+  /* ---------- começo ---------- */
+  async function iniciarApp() {
+    if (St.painelNoAr) return;
+    if (!St.cfg) return telaBoasVindas();
+    if (!St.bundle) {
+      if (!St.cfg.lastSync || Date.now() - new Date(St.cfg.lastSync).getTime() > 20000) { telaCarregando('Procurando os dados do Mac…'); await puxar(); }
+      if (!St.bundle) return telaEsperando();
+    }
+    subirPainel();
+  }
+  async function boot() {
+    try { St.cfg = (await Store.get('cofre')) || null; } catch (_) { St.cfg = null; }
+    try { St.bundle = (await Store.get('bundle')) || null; } catch (_) { St.bundle = null; }
+    try { const l = await Store.get('lock'); if (l) St.lock = { mode: 'none', graceMin: 30, ...l }; } catch (_) {}
+    St.bioOk = await Bio.available();
+    if (St.cfg) GH.cfg = St.cfg;
+    const seguir = async () => {
+      if (St.cfg && St.bundle) {
+        // abre na hora com o que já tem; se o Mac mandou coisa nova, busca rapidinho antes (até 4 s)
+        const corrida = await Promise.race([puxar().catch(() => false), new Promise(r => setTimeout(() => r('tempo'), 4000))]);
+        if (corrida === 'tempo') St.puxando && St.puxando.then(m => { if (m) { St.novo = true; pintarPilulas(); } });
+      }
+      iniciarApp();
+    };
+    if (St.cfg && (St.cfg.pedeSenha || !St.cfg.priv)) trancar(seguir, 'senha');
+    else if (lockAtiva() && lockVencida()) trancar(seguir);
+    else { if (St.cfg) tocarLock(); seguir(); }
+    if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+    setTimeout(() => procurarAtualizacao(false), 2500);
+  }
+  window.CofrePainel = { abrirFolha, versao: APP_VERSION, _st: St };
+  telaCarregando('Abrindo…');
+  boot().catch(e => { console.error(e); gate(`<div class="cf-logo">${ICO_LOGO}</div><p class="cf-err">O app não conseguiu abrir: ${esc(e && e.message || e)}</p><button class="cf-bt blk" onclick="location.reload()">Tentar de novo</button>`); });
+})();
+
+</script>
+</body>
+</html>
